@@ -1,0 +1,107 @@
+"use client";
+
+import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { FileUp, Lock } from "lucide-react";
+import { acceptToExtensions, acceptToInputString, matchesAccept } from "@/lib/files";
+import { cn } from "@/lib/utils";
+
+interface Props {
+  accept: Record<string, string[]>;
+  multiple: boolean;
+  onFiles: (files: File[]) => void;
+  disabled?: boolean;
+  compact?: boolean; // smaller variant for "add more files"
+  label?: string;
+}
+
+export function Dropzone({ accept, multiple, onFiles, disabled, compact, label }: Props) {
+  const inputId = useId();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [over, setOver] = useState(false);
+  const [rejected, setRejected] = useState<string | null>(null);
+  const exts = acceptToExtensions(accept);
+
+  const handleFiles = useCallback(
+    (list: FileList | File[] | null) => {
+      if (!list) return;
+      const all = Array.from(list);
+      const ok = all.filter((f) => matchesAccept(f, accept));
+      const bad = all.length - ok.length;
+      setRejected(bad > 0 ? `${bad} file${bad > 1 ? "s" : ""} skipped. Accepted: ${exts.join(", ")}` : null);
+      if (ok.length === 0) return;
+      onFiles(multiple ? ok : [ok[0]]);
+    },
+    [accept, exts, multiple, onFiles],
+  );
+
+  // Paste support (Ctrl+V a file from the clipboard).
+  useEffect(() => {
+    if (disabled) return;
+    const onPaste = (e: ClipboardEvent) => {
+      const files = Array.from(e.clipboardData?.files ?? []);
+      if (files.length) handleFiles(files);
+    };
+    window.addEventListener("paste", onPaste);
+    return () => window.removeEventListener("paste", onPaste);
+  }, [disabled, handleFiles]);
+
+  const text = label ?? (multiple ? "Drop files here or click to choose" : "Drop a file here or click to choose");
+
+  return (
+    <div>
+      <label
+        htmlFor={inputId}
+        onDragOver={(e) => {
+          e.preventDefault();
+          if (!disabled) setOver(true);
+        }}
+        onDragLeave={() => setOver(false)}
+        onDrop={(e) => {
+          e.preventDefault();
+          setOver(false);
+          if (!disabled) handleFiles(e.dataTransfer.files);
+        }}
+        className={cn(
+          "group flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed text-center transition-colors",
+          compact ? "gap-1 px-4 py-4" : "gap-3 px-6 py-12 sm:py-16",
+          over ? "border-primary bg-accent/60" : "border-border bg-card hover:border-primary/60 hover:bg-muted/40",
+          disabled && "pointer-events-none opacity-50",
+        )}
+      >
+        <span
+          className={cn(
+            "flex items-center justify-center rounded-full bg-accent text-accent-foreground transition-transform group-hover:scale-105",
+            compact ? "size-8" : "size-14",
+          )}
+        >
+          <FileUp className={compact ? "size-4" : "size-7"} aria-hidden="true" />
+        </span>
+        <span className={cn("font-semibold", compact ? "text-sm" : "text-base sm:text-lg")}>{text}</span>
+        {!compact && (
+          <span className="text-sm text-muted-foreground">
+            {exts.join(", ")} · Files stay on your device
+            <Lock className="ml-1 inline size-3.5 align-[-2px]" aria-hidden="true" />
+          </span>
+        )}
+        <input
+          ref={inputRef}
+          id={inputId}
+          type="file"
+          className="sr-only"
+          accept={acceptToInputString(accept)}
+          multiple={multiple}
+          disabled={disabled}
+          onChange={(e) => {
+            handleFiles(e.target.files);
+            e.target.value = "";
+          }}
+        />
+      </label>
+      {rejected && (
+        <p role="alert" className="mt-2 text-sm text-destructive">
+          {rejected}
+        </p>
+      )}
+    </div>
+  );
+}
