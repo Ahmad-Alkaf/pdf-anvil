@@ -5,7 +5,7 @@ import { ToolIconGlyph } from "@/components/tool-icon";
 import { JsonLd } from "@/components/seo/json-ld";
 import { Faq } from "@/components/seo/faq";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE, SITE_URL } from "@/lib/site";
-import { TOOLS } from "@/lib/tools";
+import { NAV_TOOLS, VARIANT_TOOLS } from "@/lib/tools";
 
 const HOME_FAQ = [
   {
@@ -82,7 +82,7 @@ export default function HomePage() {
           Tools
         </h2>
         <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {TOOLS.map((tool, i) => (
+          {NAV_TOOLS.map((tool, i) => (
             <li key={tool.slug} className="animate-fade-in-up" style={{ animationDelay: `${i * 50}ms` }}>
               <Link
                 href={`/${tool.slug}`}
@@ -101,6 +101,17 @@ export default function HomePage() {
             </li>
           ))}
         </ul>
+        <p className="mt-6 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-sm text-muted-foreground">
+          <span>Also:</span>
+          {VARIANT_TOOLS.map((tool, i) => (
+            <span key={tool.slug}>
+              <Link href={`/${tool.slug}`} className="font-medium text-foreground underline-offset-4 hover:text-primary hover:underline">
+                {tool.name}
+              </Link>
+              {i < VARIANT_TOOLS.length - 1 ? " ·" : ""}
+            </span>
+          ))}
+        </p>
       </section>
 
       <section aria-labelledby="why-heading" className="mt-20 grid gap-8 rounded-2xl border bg-muted/40 p-8 sm:grid-cols-3 sm:p-10">

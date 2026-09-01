@@ -18,7 +18,7 @@ import type { ToolDef } from "@/lib/tools";
 
 export function PdfToImagesTool({ tool }: { tool: ToolDef }) {
   const [file, setFile] = useState<File | null>(null);
-  const [format, setFormat] = useState<ImageFormat>("jpg");
+  const [format, setFormat] = useState<ImageFormat>(tool.defaults?.format ?? "jpg");
   const [dpi, setDpi] = useState<Dpi>(150);
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [capped, setCapped] = useState(false);

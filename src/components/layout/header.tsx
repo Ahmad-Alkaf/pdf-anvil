@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { Logo } from "@/components/logo";
-import { TOOLS } from "@/lib/tools";
+import { NAV_TOOLS } from "@/lib/tools";
 import { cn } from "@/lib/utils";
 
 export function Header() {
@@ -28,7 +28,7 @@ export function Header() {
 
         <nav aria-label="Tools" className="hidden md:block">
           <ul className="flex items-center gap-1">
-            {TOOLS.map((tool) => {
+            {NAV_TOOLS.map((tool) => {
               const active = pathname === `/${tool.slug}`;
               return (
                 <li key={tool.slug}>
@@ -63,7 +63,7 @@ export function Header() {
       {open && (
         <nav id="mobile-nav" aria-label="Tools" className="border-t md:hidden">
           <ul className="mx-auto grid max-w-6xl grid-cols-2 gap-1 px-4 py-3">
-            {TOOLS.map((tool) => (
+            {NAV_TOOLS.map((tool) => (
               <li key={tool.slug}>
                 <Link
                   href={`/${tool.slug}`}

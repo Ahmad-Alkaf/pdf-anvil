@@ -7,7 +7,7 @@ export function Footer() {
   return (
     <footer className="border-t bg-muted/30">
       <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:py-12">
-        <div className="grid grid-cols-1 gap-8 sm:grid-cols-[1.2fr_1fr]">
+        <div className="grid grid-cols-1 gap-8 sm:grid-cols-[1fr_1.4fr]">
           <div>
             <Link href="/" aria-label="PDF Anvil home">
               <Logo size="lg" />
@@ -31,7 +31,7 @@ export function Footer() {
 
           <div>
             <h4 className="text-sm font-semibold">Tools</h4>
-            <ul className="mt-3 grid grid-cols-2 gap-x-6 gap-y-2">
+            <ul className="mt-3 grid grid-cols-2 gap-x-6 gap-y-2 md:grid-cols-3">
               {TOOLS.map((tool) => (
                 <li key={tool.slug}>
                   <Link

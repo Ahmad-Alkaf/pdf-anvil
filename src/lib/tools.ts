@@ -1,9 +1,16 @@
-// Registry of every tool. Plain data: importable by server and client code.
+// Registry of every tool page. Plain data: importable by server and client code.
 // Routes, metadata, sitemap, header, footer, home grid, and related-tools
-// links all read from here. Client-only parts (options panel, run function)
-// live in src/components/tool/tool-registry.client.ts.
+// links all read from here.
+//
+// Several pages can share one tool implementation (`kind`). Example: the
+// image-to-PDF component serves /jpg-to-pdf, /png-to-pdf, /webp-to-pdf, and
+// /image-to-pdf. Each page has its own title, H1, intro, and FAQ so search
+// engines and AI answers can match the exact query. The client map from
+// `kind` to component is src/components/tool/tool-registry.client.ts.
 
 import { IMAGE_ACCEPT, PDF_ACCEPT } from "./files";
+
+export type ToolKind = "merge" | "split" | "rotate" | "organize" | "images-to-pdf" | "pdf-to-images";
 
 export type ToolSlug =
   | "merge-pdf"
@@ -11,7 +18,12 @@ export type ToolSlug =
   | "rotate-pdf"
   | "organize-pdf"
   | "jpg-to-pdf"
-  | "pdf-to-jpg";
+  | "png-to-pdf"
+  | "webp-to-pdf"
+  | "image-to-pdf"
+  | "pdf-to-jpg"
+  | "pdf-to-png"
+  | "pdf-to-image";
 
 export type ToolIcon = "Combine" | "Scissors" | "RotateCw" | "LayoutGrid" | "ImagePlus" | "Images";
 
@@ -22,6 +34,9 @@ export interface ToolFaq {
 
 export interface ToolDef {
   slug: ToolSlug;
+  kind: ToolKind;
+  /** Shown in the header and as a home page card. Variants of a kind set this to false. */
+  nav: boolean;
   name: string; // "Merge PDF"
   navLabel: string; // "Merge"
   title: string; // <title>, goes through "%s | PDF Anvil"
@@ -38,6 +53,8 @@ export interface ToolDef {
   faq: ToolFaq[];
   related: ToolSlug[];
   keywords: string[];
+  /** Initial option values for the tool component. */
+  defaults?: { format?: "jpg" | "png" };
 }
 
 const PRIVACY_FAQ: ToolFaq = {
@@ -55,9 +72,43 @@ const FREE_FAQ: ToolFaq = {
   a: "Yes, it is free, and there is no account. No sign-up, no email, no watermark, and no premium tier. PDF Anvil is a KafLabs side project that exists to be useful.",
 };
 
+const IMAGE_STEPS: [string, string, string] = [
+  "Drop one or more images into the box, or click to choose them.",
+  "Drag the images into order and pick a page size.",
+  "Click Create PDF and download the file.",
+];
+
+const IMAGE_FIT_FAQ: ToolFaq = {
+  q: "What does \"Fit to image\" mean?",
+  a: "Each page gets the exact size of its image, with no margins. Use it for scans and screenshots. Choose A4 or Letter when you want normal printable pages with the image centered.",
+};
+
+const IMAGE_MANY_FAQ: ToolFaq = {
+  q: "Can I put many images into one PDF?",
+  a: "Yes. Add as many images as you want. Each image becomes one page, in the order of the list. Drag an image up or down to change the order.",
+};
+
+const PDF_TO_IMAGE_STEPS: [string, string, string] = [
+  "Drop a PDF into the box, or click to choose it.",
+  "Pick the image format and the resolution you need.",
+  "Click Convert to images. Download each image, or all of them as a ZIP.",
+];
+
+const DPI_FAQ: ToolFaq = {
+  q: "Which resolution should I use?",
+  a: "72 DPI is small and good for the web. 150 DPI is a good default for screens and slides. 300 DPI is for print. Higher DPI makes larger files and takes longer.",
+};
+
+const SELECT_PAGES_FAQ: ToolFaq = {
+  q: "Can I convert only one page?",
+  a: "Yes. After the file loads, click the pages you want in the grid. Only the selected pages are converted.",
+};
+
 export const TOOLS: readonly ToolDef[] = [
   {
     slug: "merge-pdf",
+    kind: "merge",
+    nav: true,
     name: "Merge PDF",
     navLabel: "Merge",
     title: "Merge PDF Files Online – Free, Private, No Upload",
@@ -94,11 +145,13 @@ export const TOOLS: readonly ToolDef[] = [
       LIMIT_FAQ,
       FREE_FAQ,
     ],
-    related: ["split-pdf", "organize-pdf", "jpg-to-pdf"],
+    related: ["split-pdf", "organize-pdf", "image-to-pdf"],
     keywords: ["merge pdf", "combine pdf", "join pdf files", "pdf merger free", "merge pdf online"],
   },
   {
     slug: "split-pdf",
+    kind: "split",
+    nav: true,
     name: "Split PDF",
     navLabel: "Split",
     title: "Split PDF Online – Extract Pages or Split by Range",
@@ -140,6 +193,8 @@ export const TOOLS: readonly ToolDef[] = [
   },
   {
     slug: "rotate-pdf",
+    kind: "rotate",
+    nav: true,
     name: "Rotate PDF",
     navLabel: "Rotate",
     title: "Rotate PDF Pages Online – Fix Sideways Pages Free",
@@ -181,6 +236,8 @@ export const TOOLS: readonly ToolDef[] = [
   },
   {
     slug: "organize-pdf",
+    kind: "organize",
+    nav: true,
     name: "Organize PDF",
     navLabel: "Organize",
     title: "Organize PDF Pages – Reorder and Delete Pages Online",
@@ -220,92 +277,288 @@ export const TOOLS: readonly ToolDef[] = [
     related: ["rotate-pdf", "split-pdf", "merge-pdf"],
     keywords: ["reorder pdf pages", "delete pdf pages", "organize pdf", "rearrange pdf pages", "remove pages from pdf"],
   },
+
+  // ---- images to PDF: one component, four pages ----
   {
     slug: "jpg-to-pdf",
+    kind: "images-to-pdf",
+    nav: true,
     name: "JPG to PDF",
     navLabel: "JPG to PDF",
-    title: "JPG to PDF – Convert JPG, PNG and WebP Images to PDF",
+    title: "JPG to PDF – Convert JPG Images to PDF Online, Free",
     description:
-      "Turn photos and scans into one PDF. Supports JPG, PNG, and WebP. Choose A4, Letter, or fit-to-image pages. Free, in your browser, no upload.",
-    h1: "Convert images to PDF",
+      "Turn JPG photos and scans into one PDF in your browser. Choose A4, Letter, or fit-to-image pages. Free, no upload, no account, no watermark.",
+    h1: "Convert JPG to PDF",
     intro:
-      "Combine JPG, PNG, and WebP images into a single PDF. Pick the page size and drag the images into order. Your photos never leave your device.",
+      "Turn one JPG or a whole set of photos into a single PDF. Pick the page size and drag the images into order. Your photos never leave your device.",
     icon: "ImagePlus",
     accept: IMAGE_ACCEPT,
     multiple: true,
     input: "images",
     output: "pdf",
     actionLabel: "Create PDF",
-    steps: [
-      "Drop one or more images into the box, or click to choose them.",
-      "Drag the images into order and pick a page size.",
-      "Click Create PDF and download the file.",
-    ],
+    steps: IMAGE_STEPS,
     faq: [
       {
-        q: "Which image formats work?",
-        a: "JPG, PNG, and WebP. JPG and PNG are placed into the PDF as they are, with no quality loss. WebP is converted to PNG first, also without loss.",
+        q: "Does the PDF keep the full quality of my JPG?",
+        a: "Yes. The JPG data is placed into the PDF exactly as it is, with no re-compression. A 12-megapixel photo stays a 12-megapixel photo. The PDF is about as large as the images together.",
       },
-      {
-        q: "What does \"Fit to image\" mean?",
-        a: "Each page gets the exact size of its image, with no margins. Use it for scans and screenshots. Choose A4 or Letter when you want normal printable pages with the image centered.",
-      },
-      {
-        q: "Does the PDF keep the full resolution of my photos?",
-        a: "Yes. The image data is embedded without resampling. A 12-megapixel photo stays a 12-megapixel photo. That also means the PDF is about as large as the images together.",
-      },
+      IMAGE_MANY_FAQ,
+      IMAGE_FIT_FAQ,
       {
         q: "My phone photo comes out sideways. Why?",
         a: "Some phones store the rotation as a hidden tag instead of rotating the pixels. This version does not read that tag yet. Open the photo in any editor, save it once, and add it again.",
       },
+      {
+        q: "Can I mix JPG with PNG or WebP files?",
+        a: "Yes. The same tool accepts JPG, PNG, and WebP together. Each image becomes one page.",
+      },
       PRIVACY_FAQ,
       FREE_FAQ,
     ],
-    related: ["pdf-to-jpg", "merge-pdf", "organize-pdf"],
-    keywords: ["jpg to pdf", "image to pdf", "png to pdf", "convert photos to pdf", "webp to pdf"],
+    related: ["png-to-pdf", "pdf-to-jpg", "merge-pdf"],
+    keywords: ["jpg to pdf", "jpeg to pdf", "convert jpg to pdf", "photo to pdf", "jpg to pdf online free"],
   },
   {
+    slug: "png-to-pdf",
+    kind: "images-to-pdf",
+    nav: false,
+    name: "PNG to PDF",
+    navLabel: "PNG to PDF",
+    title: "PNG to PDF – Convert PNG Images to PDF Online, Free",
+    description:
+      "Convert PNG screenshots, diagrams, and graphics into one PDF without losing quality. Transparency is kept. Free, in your browser, no upload, no watermark.",
+    h1: "Convert PNG to PDF",
+    intro:
+      "Turn PNG images into a PDF with no quality loss. Screenshots, charts, and logos with transparency all work. Everything runs in your browser.",
+    icon: "ImagePlus",
+    accept: IMAGE_ACCEPT,
+    multiple: true,
+    input: "images",
+    output: "pdf",
+    actionLabel: "Create PDF",
+    steps: IMAGE_STEPS,
+    faq: [
+      {
+        q: "Is PNG to PDF lossless?",
+        a: "Yes. PNG is a lossless format and the PDF embeds the PNG data without changing it. Text in screenshots stays sharp, and colors do not shift.",
+      },
+      {
+        q: "What happens to transparency?",
+        a: "The PDF keeps the alpha channel. Transparent areas show the page background, which is white in most viewers. Nothing is flattened or filled in.",
+      },
+      IMAGE_MANY_FAQ,
+      IMAGE_FIT_FAQ,
+      {
+        q: "Which page size is best for screenshots?",
+        a: "Use \"Fit to image\" so each page has the exact pixel size of the screenshot and no margins. Use A4 or Letter if you want to print the pages.",
+      },
+      PRIVACY_FAQ,
+      FREE_FAQ,
+    ],
+    related: ["jpg-to-pdf", "pdf-to-png", "merge-pdf"],
+    keywords: ["png to pdf", "convert png to pdf", "png to pdf online free", "screenshot to pdf", "image to pdf lossless"],
+  },
+  {
+    slug: "webp-to-pdf",
+    kind: "images-to-pdf",
+    nav: false,
+    name: "WebP to PDF",
+    navLabel: "WebP to PDF",
+    title: "WebP to PDF – Convert WebP Images to PDF Online, Free",
+    description:
+      "Convert WebP images to a PDF in your browser. No software, no upload, no account. Combine many WebP files into one document for free.",
+    h1: "Convert WebP to PDF",
+    intro:
+      "WebP images from the web do not open in many PDF tools. This one converts them in your browser and combines them into a single PDF.",
+    icon: "ImagePlus",
+    accept: IMAGE_ACCEPT,
+    multiple: true,
+    input: "images",
+    output: "pdf",
+    actionLabel: "Create PDF",
+    steps: IMAGE_STEPS,
+    faq: [
+      {
+        q: "How is WebP converted?",
+        a: "Your browser decodes the WebP image and the tool stores the pixels as PNG inside the PDF. That step is lossless, so the PDF looks exactly like the original WebP.",
+      },
+      {
+        q: "Why do other tools reject my WebP files?",
+        a: "PDF has no native WebP support, and many converters only handle JPG and PNG. PDF Anvil uses the browser's own decoder, which supports WebP in every modern browser.",
+      },
+      {
+        q: "Does animated WebP work?",
+        a: "Only the first frame is used. A PDF page is a still image.",
+      },
+      IMAGE_MANY_FAQ,
+      IMAGE_FIT_FAQ,
+      PRIVACY_FAQ,
+      FREE_FAQ,
+    ],
+    related: ["png-to-pdf", "jpg-to-pdf", "image-to-pdf"],
+    keywords: ["webp to pdf", "convert webp to pdf", "webp to pdf online free", "webp converter pdf"],
+  },
+  {
+    slug: "image-to-pdf",
+    kind: "images-to-pdf",
+    nav: false,
+    name: "Image to PDF",
+    navLabel: "Image to PDF",
+    title: "Image to PDF – Convert JPG, PNG, WebP Images to PDF Free",
+    description:
+      "Convert any images to one PDF: JPG, PNG, and WebP, mixed together. Choose page size and order. Free, private, runs in your browser, no upload.",
+    h1: "Convert images to PDF",
+    intro:
+      "Combine JPG, PNG, and WebP images into a single PDF. Mix formats freely, pick a page size, and drag the images into order. Nothing leaves your device.",
+    icon: "ImagePlus",
+    accept: IMAGE_ACCEPT,
+    multiple: true,
+    input: "images",
+    output: "pdf",
+    actionLabel: "Create PDF",
+    steps: IMAGE_STEPS,
+    faq: [
+      {
+        q: "Which image formats work?",
+        a: "JPG, PNG, and WebP. JPG and PNG are placed into the PDF as they are, with no quality loss. WebP is converted to PNG first, also without loss. You can mix all three in one PDF.",
+      },
+      {
+        q: "Can I make a PDF from photos on my phone?",
+        a: "Yes. Open this page on your phone, tap the box, and choose photos from your gallery. The PDF is built on the phone and saved to your downloads.",
+      },
+      IMAGE_MANY_FAQ,
+      IMAGE_FIT_FAQ,
+      {
+        q: "Does the PDF keep the full resolution of my images?",
+        a: "Yes. The image data is embedded without resampling. That also means the PDF is about as large as the images together.",
+      },
+      PRIVACY_FAQ,
+      FREE_FAQ,
+    ],
+    related: ["jpg-to-pdf", "png-to-pdf", "pdf-to-image"],
+    keywords: ["image to pdf", "convert image to pdf", "picture to pdf", "photos to pdf", "images to pdf online free"],
+  },
+
+  // ---- PDF to images: one component, three pages ----
+  {
     slug: "pdf-to-jpg",
+    kind: "pdf-to-images",
+    nav: true,
     name: "PDF to JPG",
     navLabel: "PDF to JPG",
-    title: "PDF to JPG – Convert PDF Pages to JPG or PNG Images",
+    title: "PDF to JPG – Convert PDF Pages to JPG Images Online",
     description:
-      "Export every page of a PDF as a JPG or PNG image at 72, 150, or 300 DPI. Runs in your browser. Free, private, no upload, no watermark.",
-    h1: "Convert PDF to images",
+      "Export every page of a PDF as a JPG image at 72, 150, or 300 DPI. Runs in your browser. Free, private, no upload, no watermark, no limits.",
+    h1: "Convert PDF to JPG",
     intro:
-      "Save each page of a PDF as a JPG or PNG. Choose the resolution. Download one image or all of them as a ZIP.",
+      "Save each page of a PDF as a JPG image. Choose the resolution, pick the pages, and download one image or all of them as a ZIP.",
     icon: "Images",
     accept: PDF_ACCEPT,
     multiple: false,
     input: "pdf",
     output: "images",
     actionLabel: "Convert to images",
-    steps: [
-      "Drop a PDF into the box, or click to choose it.",
-      "Pick JPG or PNG and the resolution you need.",
-      "Click Convert to images. Download each image, or all of them as a ZIP.",
-    ],
+    steps: PDF_TO_IMAGE_STEPS,
     faq: [
+      DPI_FAQ,
       {
-        q: "Which resolution should I use?",
-        a: "72 DPI is small and good for the web. 150 DPI is a good default for screens and slides. 300 DPI is for print. Higher DPI makes larger files and takes longer.",
+        q: "When should I pick JPG over PNG?",
+        a: "JPG is smaller and best for photos and scanned pages. Switch to PNG for text, diagrams, and screenshots where sharp edges matter.",
       },
+      SELECT_PAGES_FAQ,
       {
-        q: "JPG or PNG?",
-        a: "JPG is smaller and best for photos and scanned pages. PNG is lossless and best for text, diagrams, and screenshots where sharp edges matter.",
-      },
-      {
-        q: "Can I convert only one page?",
-        a: "Yes. After the file loads, select the pages you want in the grid. Only the selected pages are converted.",
+        q: "Does the JPG contain the whole page?",
+        a: "Yes. The full page is rendered, including images, vector graphics, and text, exactly as a PDF viewer shows it. Form fields and annotations are included as they appear.",
       },
       PRIVACY_FAQ,
       LIMIT_FAQ,
       FREE_FAQ,
     ],
-    related: ["jpg-to-pdf", "split-pdf", "rotate-pdf"],
-    keywords: ["pdf to jpg", "pdf to png", "convert pdf to image", "pdf to jpg online free", "pdf page to image"],
+    related: ["pdf-to-png", "jpg-to-pdf", "split-pdf"],
+    defaults: { format: "jpg" },
+    keywords: ["pdf to jpg", "convert pdf to jpg", "pdf to jpeg", "pdf to jpg online free", "pdf page to jpg"],
+  },
+  {
+    slug: "pdf-to-png",
+    kind: "pdf-to-images",
+    nav: false,
+    name: "PDF to PNG",
+    navLabel: "PDF to PNG",
+    title: "PDF to PNG – Convert PDF Pages to PNG Images Online",
+    description:
+      "Export PDF pages as lossless PNG images at 72, 150, or 300 DPI. Sharp text and diagrams. Runs in your browser. Free, private, no upload, no watermark.",
+    h1: "Convert PDF to PNG",
+    intro:
+      "Save PDF pages as lossless PNG images. Text, diagrams, and screenshots stay sharp. Choose the resolution and the pages, then download them.",
+    icon: "Images",
+    accept: PDF_ACCEPT,
+    multiple: false,
+    input: "pdf",
+    output: "images",
+    actionLabel: "Convert to images",
+    steps: PDF_TO_IMAGE_STEPS,
+    faq: [
+      {
+        q: "Why choose PNG instead of JPG?",
+        a: "PNG is lossless. Text edges, thin lines, and flat colors stay exact, with no compression artifacts. It is the right choice for slides, diagrams, forms, and anything you plan to edit further.",
+      },
+      DPI_FAQ,
+      {
+        q: "Is the PNG background transparent?",
+        a: "No. PDF pages have a white background by definition, and the PNG keeps it. Use an image editor if you need to remove it.",
+      },
+      SELECT_PAGES_FAQ,
+      PRIVACY_FAQ,
+      LIMIT_FAQ,
+      FREE_FAQ,
+    ],
+    related: ["pdf-to-jpg", "png-to-pdf", "split-pdf"],
+    defaults: { format: "png" },
+    keywords: ["pdf to png", "convert pdf to png", "pdf to png online free", "pdf page to png", "pdf to png high resolution"],
+  },
+  {
+    slug: "pdf-to-image",
+    kind: "pdf-to-images",
+    nav: false,
+    name: "PDF to Image",
+    navLabel: "PDF to Image",
+    title: "PDF to Image – Convert PDF Pages to JPG or PNG Online",
+    description:
+      "Convert PDF pages to images. Pick JPG or PNG and 72, 150, or 300 DPI. Select the pages you need. Free, in your browser, no upload, no limits.",
+    h1: "Convert PDF to images",
+    intro:
+      "Turn PDF pages into image files. Pick JPG for photos and scans or PNG for text and diagrams, choose the resolution, and download the pages you need.",
+    icon: "Images",
+    accept: PDF_ACCEPT,
+    multiple: false,
+    input: "pdf",
+    output: "images",
+    actionLabel: "Convert to images",
+    steps: PDF_TO_IMAGE_STEPS,
+    faq: [
+      {
+        q: "JPG or PNG?",
+        a: "JPG is smaller and best for photos and scanned pages. PNG is lossless and best for text, diagrams, and screenshots where sharp edges matter.",
+      },
+      DPI_FAQ,
+      SELECT_PAGES_FAQ,
+      {
+        q: "Can I get one image of the whole document?",
+        a: "Each page becomes its own image. If you need one tall image, convert the pages and stitch them in an image editor.",
+      },
+      PRIVACY_FAQ,
+      LIMIT_FAQ,
+      FREE_FAQ,
+    ],
+    related: ["pdf-to-jpg", "pdf-to-png", "image-to-pdf"],
+    defaults: { format: "jpg" },
+    keywords: ["pdf to image", "convert pdf to image", "pdf to picture", "pdf page to image", "pdf to image online free"],
   },
 ];
+
+export const NAV_TOOLS: readonly ToolDef[] = TOOLS.filter((t) => t.nav);
+export const VARIANT_TOOLS: readonly ToolDef[] = TOOLS.filter((t) => !t.nav);
 
 export function getTool(slug: string): ToolDef | undefined {
   return TOOLS.find((t) => t.slug === slug);
