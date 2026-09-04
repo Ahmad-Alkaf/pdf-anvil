@@ -2,15 +2,18 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTheme } from "next-themes";
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, Moon, Sun, X } from "lucide-react";
 import { Logo } from "@/components/logo";
 import { NAV_TOOLS } from "@/lib/tools";
 import { cn } from "@/lib/utils";
 
 export function Header() {
   const pathname = usePathname();
+  const { resolvedTheme, setTheme } = useTheme();
   const [open, setOpen] = useState(false);
+  const isDark = resolvedTheme === "dark";
 
   // Close the mobile menu after navigation (state adjusted during render).
   const [trackedPath, setTrackedPath] = useState(pathname);
@@ -48,16 +51,32 @@ export function Header() {
           </ul>
         </nav>
 
-        <button
-          type="button"
-          className="inline-flex size-9 items-center justify-center rounded-md hover:bg-muted md:hidden"
-          aria-expanded={open}
-          aria-controls="mobile-nav"
-          aria-label={open ? "Close menu" : "Open menu"}
-          onClick={() => setOpen((v) => !v)}
-        >
-          {open ? <X className="size-5" /> : <Menu className="size-5" />}
-        </button>
+        <div className="flex items-center gap-1">
+          <button
+            type="button"
+            className="inline-flex size-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 motion-reduce:active:scale-100"
+            aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
+            title={isDark ? "Switch to light theme" : "Switch to dark theme"}
+            onClick={() => setTheme(isDark ? "light" : "dark")}
+          >
+            {isDark ? (
+              <Sun key="sun" className="size-4.5 animate-theme-icon-enter motion-reduce:animate-none" aria-hidden="true" />
+            ) : (
+              <Moon key="moon" className="size-4.5 animate-theme-icon-enter motion-reduce:animate-none" aria-hidden="true" />
+            )}
+          </button>
+
+          <button
+            type="button"
+            className="inline-flex size-9 items-center justify-center rounded-md hover:bg-muted md:hidden"
+            aria-expanded={open}
+            aria-controls="mobile-nav"
+            aria-label={open ? "Close menu" : "Open menu"}
+            onClick={() => setOpen((v) => !v)}
+          >
+            {open ? <X className="size-5" /> : <Menu className="size-5" />}
+          </button>
+        </div>
       </div>
 
       {open && (
