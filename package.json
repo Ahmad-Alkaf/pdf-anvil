@@ -11,6 +11,7 @@
     "prebuild": "node scripts/copy-pdf-assets.mjs",
     "build": "next build",
     "start": "next start",
+    "deploy": "npx wrangler deploy",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "icons": "tsx scripts/generate-icons.ts"
