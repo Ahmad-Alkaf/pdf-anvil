@@ -55,6 +55,9 @@ export function Footer() {
             . All rights reserved.
           </span>
           <div className="flex gap-4">
+            <Link href="/about" className="text-xs text-muted-foreground transition-colors hover:text-foreground">
+              About
+            </Link>
             <a
               href={KAFLABS_PRIVACY_URL}
               target="_blank"

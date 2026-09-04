@@ -421,7 +421,7 @@ export const TOOLS: readonly ToolDef[] = [
     faq: [
       {
         q: "Which image formats work?",
-        a: "JPG, PNG, and WebP. JPG and PNG are placed into the PDF as they are, with no quality loss. WebP is converted to PNG first, also without loss. You can mix all three in one PDF.",
+        a: "JPG, PNG, and WebP. JPG and PNG are embedded directly. WebP is decoded and converted to PNG before it is added. You can mix all three in one PDF.",
       },
       {
         q: "Can I make a PDF from photos on my phone?",

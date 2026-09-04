@@ -14,7 +14,7 @@ const HOME_FAQ = [
   },
   {
     q: "Do you store my files?",
-    a: "No. Files are never uploaded. They are opened in your browser, edited there, and the result is saved from there. Close the tab and nothing is left.",
+    a: "No. Files are never uploaded. They are opened in your browser, edited there, and the result is saved from there.",
   },
   {
     q: "Do I need to install anything or create an account?",
@@ -66,7 +66,7 @@ export default function HomePage() {
         </p>
         <ul className="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
           <li className="flex items-center gap-1.5">
-            <Lock className="size-4 text-primary" aria-hidden="true" /> 100% in your browser
+            <Lock className="size-4 text-primary" aria-hidden="true" /> Files processed in your browser
           </li>
           <li className="flex items-center gap-1.5">
             <InfinityIcon className="size-4 text-primary" aria-hidden="true" /> No file or page limits
@@ -121,16 +121,16 @@ export default function HomePage() {
           </h2>
         </div>
         <div>
-          <h3 className="font-semibold">Privacy you can verify</h3>
+          <h3 className="font-semibold">Security you can verify</h3>
           <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-            Open the network tab of your browser while you use a tool. You will see no upload. The document is
-            processed by code that runs on your device.
+            PDF Anvil does not upload selected files to a processing server. Your document stays on your device, with
+            no server-side file copy, retention, or third-party access during processing.
           </p>
         </div>
         <div>
           <h3 className="font-semibold">Fast, with no queue</h3>
           <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-            No waiting for an upload, a server queue, and a download. Most operations finish in under a second.
+            No waiting for an upload, a server queue, and a download. Processing time depends on your file and device.
           </p>
         </div>
         <div>

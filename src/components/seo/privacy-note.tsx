@@ -21,7 +21,7 @@ export function PrivacyNote() {
   return (
     <section aria-labelledby="privacy-heading" className="rounded-2xl border bg-muted/40 p-6">
       <h2 id="privacy-heading" className="text-2xl font-bold">
-        Private by design
+        Secure and private by design
       </h2>
       <ul className="mt-5 grid gap-5 sm:grid-cols-3">
         {points.map((p) => (
