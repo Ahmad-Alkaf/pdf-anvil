@@ -33,18 +33,8 @@ All variables are inlined at build time. See `.env.example`.
 | Variable | Purpose |
 |---|---|
 | `NEXT_PUBLIC_APP_URL` | Public site URL for canonical links, sitemap, and Open Graph |
-| `NEXT_PUBLIC_UMAMI_SRC` | Umami `script.js` URL. Empty disables analytics |
-| `NEXT_PUBLIC_UMAMI_WEBSITE_ID` | Umami website id |
-
-## Docker
-
-```
-docker build -t pdfanvil --build-arg NEXT_PUBLIC_APP_URL=http://localhost:3000 .
-docker run --rm -p 3000:3000 pdfanvil
-```
-
-On Coolify: application type Dockerfile, port 3000, and mark the three `NEXT_PUBLIC_*` variables as
-"Available at build time".
+| `NEXT_PUBLIC_UMAMI_SRC` | Optional Umami `script.js` URL. Empty disables the script |
+| `NEXT_PUBLIC_UMAMI_WEBSITE_ID` | Optional Umami website id |
 
 ## Add a tool
 

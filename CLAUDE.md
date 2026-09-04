@@ -11,8 +11,8 @@ Shared organization rules, product list, and shell rules are in the parent `../C
 - **pdf.js assets** come from `scripts/copy-pdf-assets.mjs` (runs on `predev` and `prebuild`) into `public/pdfjs/<version>/`. Never commit `public/pdfjs`. `src/lib/pdf/pdfjs.ts` is the only file that knows that path.
 - **Read files twice.** pdf.js transfers its input buffer to the worker and detaches it. Never hand the same `Uint8Array` to pdf.js and pdf-lib.
 - **Icons** come from one SVG path in `src/lib/brand.ts`. Run `npm run icons` to regenerate `public/icons/*` and `src/app/favicon.ico`, and commit the outputs. `icon.tsx`, `apple-icon.tsx`, and `opengraph-image.tsx` render the same path with `ImageResponse`.
-- **Deploy** is the `Dockerfile` on Coolify. `NEXT_PUBLIC_*` variables are build-time only.
-- **Analytics** is self-hosted Umami, enabled only when both `NEXT_PUBLIC_UMAMI_*` variables are set. `src/lib/analytics.ts` `track()` must never throw.
+- **Static export.** `next.config.ts` sets `output: "export"`; `wrangler.jsonc` serves `out/`. Never add anything that needs a server at runtime. `NEXT_PUBLIC_*` variables are build-time only. Hosting details are in `../kaflabs/DEPLOY-PLAN.md`.
+- **Analytics** script renders only when both `NEXT_PUBLIC_UMAMI_*` variables are set. `src/lib/analytics.ts` `track()` must never throw.
 
 ## Commands
 
