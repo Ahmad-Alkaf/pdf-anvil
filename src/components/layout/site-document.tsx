@@ -51,7 +51,7 @@ export function SiteDocument({ locale, pageId, children }: { locale: Locale; pag
       <body className="flex min-h-full flex-col">
         <ThemeProvider>
           <LocaleProvider value={{ locale, meta: bundle.meta, messages: bundle.messages, nav: toNavPages(locale) }}>
-            <Header />
+            <Header links={links} />
             {links.length > 1 && <LocaleSuggestion current={locale} links={links} />}
             <main className="flex-1">{children}</main>
             <Footer locale={locale} links={links} />

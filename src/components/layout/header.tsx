@@ -3,13 +3,14 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
-import { useEffect, useId, useRef, useState, useSyncExternalStore } from "react";
-import { ChevronDown, Menu, Moon, Sun, X } from "lucide-react";
+import { useCallback, useEffect, useId, useRef, useState, useSyncExternalStore } from "react";
+import { Check, ChevronDown, Languages, Menu, Moon, Sun, X } from "lucide-react";
 import { Logo } from "@/components/logo";
 import { ToolIconGlyph } from "@/components/tool-icon";
 import { HEADER_LIMIT } from "@/lib/tools";
 import { useLocale } from "@/locales/context";
 import { localeHref } from "@/locales/href";
+import type { LocaleLink } from "@/locales";
 import { cn } from "@/lib/utils";
 
 // `false` during server rendering and hydration, `true` after mount.
@@ -29,7 +30,26 @@ function useMounted() {
 // new tool never changes the header width.
 const MD_LINKS = 3;
 
-export function Header() {
+/** Close a panel on Escape and on a pointer down outside `ref`. */
+function useDismiss(open: boolean, close: () => void, ref: React.RefObject<HTMLElement | null>) {
+  useEffect(() => {
+    if (!open) return;
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") close();
+    }
+    function onPointer(e: PointerEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) close();
+    }
+    document.addEventListener("keydown", onKey);
+    document.addEventListener("pointerdown", onPointer);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.removeEventListener("pointerdown", onPointer);
+    };
+  }, [open, close, ref]);
+}
+
+export function Header({ links }: { links: readonly LocaleLink[] }) {
   const pathname = usePathname();
   const { locale, messages, nav } = useLocale();
   const m = messages.header;
@@ -43,6 +63,10 @@ export function Header() {
   const [allOpen, setAllOpen] = useState(false);
   const allRef = useRef<HTMLLIElement>(null);
   const allPanelId = useId();
+  const [langOpen, setLangOpen] = useState(false);
+  const langRef = useRef<HTMLDivElement>(null);
+  const langPanelId = useId();
+  const current = links.find((l) => l.code === locale);
   // The theme is only known in the browser. Reading it during hydration makes the
   // server HTML (light) differ from the first client render (dark) and throws
   // React error #418 for dark-mode visitors. Until mount, both icons are rendered
@@ -59,24 +83,13 @@ export function Header() {
     setTrackedPath(pathname);
     setOpen(false);
     setAllOpen(false);
+    setLangOpen(false);
   }
 
-  // "All tools" panel: close on Escape and on a click outside.
-  useEffect(() => {
-    if (!allOpen) return;
-    function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") setAllOpen(false);
-    }
-    function onPointer(e: PointerEvent) {
-      if (allRef.current && !allRef.current.contains(e.target as Node)) setAllOpen(false);
-    }
-    document.addEventListener("keydown", onKey);
-    document.addEventListener("pointerdown", onPointer);
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      document.removeEventListener("pointerdown", onPointer);
-    };
-  }, [allOpen]);
+  const closeAll = useCallback(() => setAllOpen(false), []);
+  const closeLang = useCallback(() => setLangOpen(false), []);
+  useDismiss(allOpen, closeAll, allRef);
+  useDismiss(langOpen, closeLang, langRef);
 
   const linkClass = (active: boolean) =>
     cn(
@@ -167,6 +180,54 @@ export function Header() {
         </nav>
 
         <div className="flex shrink-0 items-center gap-1">
+          {links.length > 1 && (
+            <div className="relative" ref={langRef}>
+              <button
+                type="button"
+                className={cn(linkClass(langOpen), "inline-flex h-9 items-center gap-1.5 px-2.5")}
+                aria-label={m.language}
+                title={m.language}
+                aria-expanded={langOpen}
+                aria-controls={langPanelId}
+                aria-haspopup="true"
+                onClick={() => setLangOpen((v) => !v)}
+              >
+                <Languages className="size-4.5" aria-hidden="true" />
+                <span className="hidden sm:inline">{current?.name ?? locale}</span>
+                <ChevronDown className={cn("hidden size-4 transition-transform sm:inline", langOpen && "rotate-180")} aria-hidden="true" />
+              </button>
+              {langOpen && (
+                <nav
+                  id={langPanelId}
+                  aria-label={m.language}
+                  className="absolute end-0 top-full mt-2 w-56 rounded-xl border bg-card p-2 text-card-foreground shadow-lg"
+                >
+                  <ul className="grid gap-0.5">
+                    {links.map((l) => {
+                      const active = l.code === locale;
+                      return (
+                        <li key={l.code}>
+                          <Link
+                            href={l.href}
+                            hrefLang={l.htmlLang}
+                            lang={l.htmlLang}
+                            aria-current={active ? "true" : undefined}
+                            className={cn(
+                              "flex items-center justify-between gap-3 rounded-md px-3 py-2 text-sm",
+                              active ? "bg-accent font-medium text-accent-foreground" : "hover:bg-muted",
+                            )}
+                          >
+                            {l.name}
+                            {active && <Check className="size-4" aria-hidden="true" />}
+                          </Link>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </nav>
+              )}
+            </div>
+          )}
           <button
             type="button"
             className="inline-flex size-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 motion-reduce:active:scale-100"
