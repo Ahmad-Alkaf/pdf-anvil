@@ -17,5 +17,5 @@ Shared organization rules, product list, and shell rules are in the parent `../C
 ## Commands
 
 - `npm run dev`, `npm run build`, `npm start`
-- `npm run typecheck`, `npm run lint`
+- `npm run typecheck`, `npm run lint`, `npm test` (Vitest, `__tests__/`; fixtures built with pdf-lib and sharp, no pdf.js rendering)
 - `npm run icons`
