@@ -15,6 +15,7 @@ import id from "./id";
 import it from "./it";
 import ja from "./ja";
 import pt from "./pt";
+import th from "./th";
 import vi from "./vi";
 import type { Locale, LocaleBundle, LocalePage } from "./types";
 
@@ -22,7 +23,7 @@ export { DEFAULT_LOCALE, localeHref };
 export { KIND_SPEC, KINDS, toToolPage } from "./kinds";
 export type * from "./types";
 
-export const LOCALES: readonly LocaleBundle[] = [en, ar, de, es, fr, id, it, ja, pt, vi];
+export const LOCALES: readonly LocaleBundle[] = [en, ar, de, es, fr, id, it, ja, pt, th, vi];
 
 /** Registered locales other than English, in registry order. */
 export const EXTRA_LOCALES: readonly LocaleBundle[] = LOCALES.filter((l) => l.meta.code !== DEFAULT_LOCALE);
