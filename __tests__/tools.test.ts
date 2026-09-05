@@ -84,6 +84,18 @@ describe("TOOLS registry", () => {
     expect(VARIANT_TOOLS.map((t) => t.slug)).toContain("reduce-pdf-size");
   });
 
+  it("registers scan-to-pdf as the only image variant with camera capture", () => {
+    const scan = getTool("scan-to-pdf");
+    expect(scan).toMatchObject({ kind: "images-to-pdf", nav: false, input: "images", output: "pdf", capture: true });
+    expect(scan!.defaults?.pageSize).toBe("a4");
+    expect(scan!.keywords).toEqual(expect.arrayContaining(["scan to pdf", "scan documents to pdf", "how to scan documents to pdf"]));
+    expect(scan!.faq.some((f) => /straight/i.test(f.q))).toBe(true);
+    expect(VARIANT_TOOLS.map((t) => t.slug)).toContain("scan-to-pdf");
+    for (const tool of TOOLS.filter((t) => t.slug !== "scan-to-pdf")) {
+      expect(tool.capture, tool.slug).toBeUndefined();
+    }
+  });
+
   it("registers the viewer as a nav tool with no output", () => {
     const viewer = getTool("pdf-viewer");
     expect(viewer).toMatchObject({ kind: "view", nav: true, input: "pdf", output: "none", icon: "BookOpen" });

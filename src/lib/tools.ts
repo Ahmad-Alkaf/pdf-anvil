@@ -3,8 +3,8 @@
 // links all read from here.
 //
 // Several pages can share one tool implementation (`kind`). Example: the
-// image-to-PDF component serves /jpg-to-pdf, /png-to-pdf, /webp-to-pdf, and
-// /image-to-pdf; /combine-pdf is a variant of merge and /extract-pdf-pages is
+// image-to-PDF component serves /jpg-to-pdf, /png-to-pdf, /webp-to-pdf,
+// /image-to-pdf, and /scan-to-pdf; /combine-pdf is a variant of merge and /extract-pdf-pages is
 // a variant of split. Each page has its own title, H1, intro, and FAQ so search
 // engines and AI answers can match the exact query. The client map from
 // `kind` to component is src/components/tool/tool-registry.client.ts.
@@ -24,6 +24,7 @@ export type ToolSlug =
   | "png-to-pdf"
   | "webp-to-pdf"
   | "image-to-pdf"
+  | "scan-to-pdf"
   | "pdf-to-jpg"
   | "pdf-to-png"
   | "pdf-to-image"
@@ -61,7 +62,9 @@ export interface ToolDef {
   related: ToolSlug[];
   keywords: string[];
   /** Initial option values for the tool component. */
-  defaults?: { format?: "jpg" | "png" };
+  defaults?: { format?: "jpg" | "png"; pageSize?: "fit" | "a4" | "letter" };
+  /** Show a "Take a photo" button that opens the phone camera (image tools only). */
+  capture?: boolean;
 }
 
 const PRIVACY_FAQ: ToolFaq = {
@@ -423,7 +426,7 @@ export const TOOLS: readonly ToolDef[] = [
     keywords: ["reorder pdf pages", "delete pdf pages", "organize pdf", "rearrange pdf pages", "remove pages from pdf"],
   },
 
-  // ---- images to PDF: one component, four pages ----
+  // ---- images to PDF: one component, five pages ----
   {
     slug: "jpg-to-pdf",
     kind: "images-to-pdf",
@@ -603,6 +606,62 @@ export const TOOLS: readonly ToolDef[] = [
       "photos to pdf",
       "images to pdf online free",
     ],
+  },
+
+  {
+    slug: "scan-to-pdf",
+    kind: "images-to-pdf",
+    nav: false,
+    name: "Scan to PDF",
+    navLabel: "Scan to PDF",
+    title: "Scan Documents to PDF Online – Use Your Phone Camera, Free",
+    description:
+      "Scan paper documents to PDF with your phone camera or existing photos. Put the pages in order and pick A4 or Letter. Free, private, nothing is uploaded.",
+    h1: "Scan documents to PDF",
+    intro:
+      "Take a photo of each page with your phone camera, or add photos you already have. Put the pages in order and get one PDF. Nothing is uploaded.",
+    icon: "ImagePlus",
+    accept: IMAGE_ACCEPT,
+    multiple: true,
+    input: "images",
+    output: "pdf",
+    actionLabel: "Create PDF",
+    steps: [
+      "Tap Take a photo and photograph the first page. Or tap the box to add photos you already have.",
+      "Repeat for each page. Drag the pages into order and pick a page size.",
+      "Tap Create PDF. The file downloads at once.",
+    ],
+    faq: [
+      {
+        q: "How do I scan a document with my phone?",
+        a: "Open this page on your phone. Tap Take a photo. The camera opens. Photograph the first page and confirm it. Tap Take a photo again for the next page. When all pages are in the list, tap Create PDF. The PDF is saved on your phone.",
+      },
+      {
+        q: "Can I use this on a desktop computer?",
+        a: "Yes. On a desktop, the Take a photo button opens the normal file picker. Choose photos or scans that are already on your computer, put them in order, and create the PDF.",
+      },
+      {
+        q: "Are my photos uploaded to a server?",
+        a: "No. The camera photo goes from your phone camera into the page in your browser. The PDF is built there too. Nothing is sent to us. You can turn off your internet connection after the page loads and the tool still works.",
+      },
+      {
+        q: "How do I get straight, readable pages?",
+        a: "Put the document on a flat surface with a plain background. Use good light and avoid shadows from your hand or phone. Hold the phone parallel to the page and fill the frame with the page. Tap the screen to focus before you take the photo. The tool does not crop or straighten the photo.",
+      },
+      {
+        q: "Which page size should I choose?",
+        a: "Choose A4 or Letter to get normal printable pages with the photo centered. A4 is the default. Choose \"Fit to image\" to make each page the exact size of the photo, with no margins.",
+      },
+      {
+        q: "Can I scan many pages into one PDF?",
+        a: "Yes. Take one photo per page. Each photo becomes one page in the order of the list. There is no page limit. Drag a page up or down to change the order.",
+      },
+      FREE_FAQ,
+    ],
+    related: ["image-to-pdf", "jpg-to-pdf", "compress-pdf", "organize-pdf"],
+    keywords: ["scan to pdf", "scan documents to pdf", "how to scan documents to pdf", "phone scanner pdf", "camera to pdf"],
+    defaults: { pageSize: "a4" },
+    capture: true,
   },
 
   // ---- PDF to images: one component, three pages ----

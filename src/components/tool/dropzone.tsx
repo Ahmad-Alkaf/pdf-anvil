@@ -1,7 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useId, useRef, useState } from "react";
-import { FileUp, Lock } from "lucide-react";
+import { Camera, FileUp, Lock } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { acceptToExtensions, acceptToInputString, matchesAccept } from "@/lib/files";
 import { cn } from "@/lib/utils";
 
@@ -12,11 +13,14 @@ interface Props {
   disabled?: boolean;
   compact?: boolean; // smaller variant for "add more files"
   label?: string;
+  /** Adds a "Take a photo" button that opens the phone camera. Desktop browsers open the file picker. */
+  capture?: boolean;
 }
 
-export function Dropzone({ accept, multiple, onFiles, disabled, compact, label }: Props) {
+export function Dropzone({ accept, multiple, onFiles, disabled, compact, label, capture }: Props) {
   const inputId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
+  const captureRef = useRef<HTMLInputElement>(null);
   const [over, setOver] = useState(false);
   const [rejected, setRejected] = useState<string | null>(null);
   const exts = acceptToExtensions(accept);
@@ -97,6 +101,35 @@ export function Dropzone({ accept, multiple, onFiles, disabled, compact, label }
           }}
         />
       </label>
+      {capture && (
+        <div className={cn("flex justify-center", compact ? "mt-2" : "mt-3")}>
+          <Button
+            variant="outline"
+            size={compact ? "sm" : "md"}
+            disabled={disabled}
+            onClick={() => captureRef.current?.click()}
+          >
+            <Camera className="size-4" aria-hidden="true" />
+            Take a photo
+          </Button>
+          <input
+            ref={captureRef}
+            type="file"
+            className="sr-only"
+            tabIndex={-1}
+            aria-hidden="true"
+            data-testid="capture-input"
+            accept="image/*"
+            capture="environment"
+            multiple={multiple}
+            disabled={disabled}
+            onChange={(e) => {
+              handleFiles(e.target.files);
+              e.target.value = "";
+            }}
+          />
+        </div>
+      )}
       {rejected && (
         <p role="alert" className="mt-2 text-sm text-destructive">
           {rejected}

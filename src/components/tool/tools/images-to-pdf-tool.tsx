@@ -19,7 +19,7 @@ const nextId = () => `i${Date.now().toString(36)}-${seq++}`;
 
 export function ImagesToPdfTool({ tool }: { tool: ToolDef }) {
   const [items, setItems] = useState<FileItem[]>([]);
-  const [pageSize, setPageSize] = useState<PageSizeOption>("a4");
+  const [pageSize, setPageSize] = useState<PageSizeOption>(tool.defaults?.pageSize ?? "a4");
   const [orientation, setOrientation] = useState<OrientationOption>("auto");
   const [margin, setMargin] = useState<number>(36);
   const runner = useToolRunner();
@@ -86,7 +86,7 @@ export function ImagesToPdfTool({ tool }: { tool: ToolDef }) {
     return <ResultPanel results={runner.results} zipName="images.zip" onStartOver={reset} />;
   }
 
-  if (items.length === 0) return <Dropzone accept={tool.accept} multiple onFiles={addFiles} />;
+  if (items.length === 0) return <Dropzone accept={tool.accept} multiple onFiles={addFiles} capture={tool.capture} />;
 
   return (
     <div className="space-y-4">
@@ -132,7 +132,15 @@ export function ImagesToPdfTool({ tool }: { tool: ToolDef }) {
       </div>
 
       <FileList items={items} onReorder={setItems} onRemove={remove} disabled={runner.busy} />
-      <Dropzone accept={tool.accept} multiple onFiles={addFiles} compact label="Add more images" disabled={runner.busy} />
+      <Dropzone
+        accept={tool.accept}
+        multiple
+        onFiles={addFiles}
+        compact
+        label="Add more images"
+        disabled={runner.busy}
+        capture={tool.capture}
+      />
 
       {runner.error && <ErrorBanner message={runner.error} onDismiss={runner.reset} />}
       <ActionBar
