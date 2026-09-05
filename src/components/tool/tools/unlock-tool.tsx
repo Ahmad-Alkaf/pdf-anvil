@@ -136,7 +136,6 @@ export function UnlockTool({ tool }: { tool: ToolPage }) {
               onChange={setPassword}
               required
               autoFocus
-              autoComplete="current-password"
               hint={m.hint}
             />
           </div>

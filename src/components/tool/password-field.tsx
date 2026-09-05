@@ -14,11 +14,18 @@ interface Props {
   required?: boolean;
   autoFocus?: boolean;
   disabled?: boolean;
-  autoComplete?: string;
 }
 
-/** Password input with a show/hide toggle. Never stores the value anywhere. */
-export function PasswordField({ label, value, onChange, hint, placeholder, required, autoFocus, disabled, autoComplete }: Props) {
+/**
+ * Password input with a show/hide toggle. Never stores the value anywhere.
+ *
+ * The input is `type="text"` masked with CSS (`-webkit-text-security`, which
+ * every current browser supports), not `type="password"`. A document password
+ * is not a login: Chrome ignores `autocomplete="off"` on password fields and
+ * offers to save the value after the form is used, which is wrong here. A
+ * masked text field is not classified as a credential, so no prompt appears.
+ */
+export function PasswordField({ label, value, onChange, hint, placeholder, required, autoFocus, disabled }: Props) {
   const m = useMessages().toolShell.password;
   const id = useId();
   const hintId = `${id}-hint`;
@@ -38,18 +45,25 @@ export function PasswordField({ label, value, onChange, hint, placeholder, requi
       <div className="mt-1.5 flex items-center gap-1">
         <input
           id={id}
-          type={shown ? "text" : "password"}
+          type="text"
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
           required={required}
           autoFocus={autoFocus}
           disabled={disabled}
-          autoComplete={autoComplete ?? "off"}
+          autoComplete="off"
+          autoCapitalize="off"
+          autoCorrect="off"
           spellCheck={false}
+          data-1p-ignore=""
+          data-lpignore="true"
+          data-bwignore=""
+          data-form-type="other"
           aria-describedby={hint ? hintId : undefined}
           className={cn(
             "h-10 min-w-0 flex-1 rounded-lg border bg-background px-3 text-sm",
+            !shown && "masked-text",
             "focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
             "disabled:opacity-60",
           )}

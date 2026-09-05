@@ -97,14 +97,12 @@ export function ProtectTool({ tool }: { tool: ToolPage }) {
               onChange={setUserPassword}
               required
               autoFocus
-              autoComplete="new-password"
               hint={m.openHint}
             />
             <PasswordField
               label={m.ownerPassword}
               value={ownerPassword}
               onChange={setOwnerPassword}
-              autoComplete="new-password"
               placeholder={m.optional}
               hint={
                 sameOwner
