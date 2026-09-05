@@ -9,7 +9,7 @@ export function Footer() {
       <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:py-12">
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-[1fr_1.4fr]">
           <div>
-            <Link href="/" aria-label="PDF Anvil home">
+            <Link href="/">
               <Logo size="lg" />
             </Link>
             <p className="mt-3 max-w-72 text-sm leading-relaxed text-muted-foreground">
@@ -30,7 +30,7 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="text-sm font-semibold">Tools</h4>
+            <h2 className="text-sm font-semibold">Tools</h2>
             <ul className="mt-3 grid grid-cols-2 gap-x-6 gap-y-2 md:grid-cols-3">
               {TOOLS.map((tool) => (
                 <li key={tool.slug}>

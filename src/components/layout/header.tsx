@@ -3,17 +3,36 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { Menu, Moon, Sun, X } from "lucide-react";
 import { Logo } from "@/components/logo";
 import { NAV_TOOLS } from "@/lib/tools";
 import { cn } from "@/lib/utils";
 
+// `false` during server rendering and hydration, `true` after mount.
+// Hydration-safe replacement for the "set mounted in an effect" pattern.
+const noopSubscribe = () => () => {};
+function useMounted() {
+  return useSyncExternalStore(
+    noopSubscribe,
+    () => true,
+    () => false,
+  );
+}
+
 export function Header() {
   const pathname = usePathname();
   const { resolvedTheme, setTheme } = useTheme();
   const [open, setOpen] = useState(false);
-  const isDark = resolvedTheme === "dark";
+  // The theme is only known in the browser. Reading it during hydration makes the
+  // server HTML (light) differ from the first client render (dark) and throws
+  // React error #418 for dark-mode visitors. Until mount, both icons are rendered
+  // and CSS picks one, so the markup is identical on both sides.
+  const mounted = useMounted();
+  const isDark = mounted && resolvedTheme === "dark";
+  const [animateIcon, setAnimateIcon] = useState(false);
+  const themeLabel = !mounted ? "Toggle theme" : isDark ? "Switch to light theme" : "Switch to dark theme";
+  const iconAnimation = animateIcon ? "animate-theme-icon-enter motion-reduce:animate-none" : "";
 
   // Close the mobile menu after navigation (state adjusted during render).
   const [trackedPath, setTrackedPath] = useState(pathname);
@@ -25,7 +44,7 @@ export function Header() {
   return (
     <header className="sticky top-0 z-40 border-b bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/70">
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6">
-        <Link href="/" aria-label="PDF Anvil home" className="shrink-0">
+        <Link href="/" className="shrink-0">
           <Logo />
         </Link>
 
@@ -55,14 +74,22 @@ export function Header() {
           <button
             type="button"
             className="inline-flex size-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 motion-reduce:active:scale-100"
-            aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
-            title={isDark ? "Switch to light theme" : "Switch to dark theme"}
-            onClick={() => setTheme(isDark ? "light" : "dark")}
+            aria-label={themeLabel}
+            title={themeLabel}
+            onClick={() => {
+              setAnimateIcon(true);
+              setTheme(isDark ? "light" : "dark");
+            }}
           >
-            {isDark ? (
-              <Sun key="sun" className="size-4.5 animate-theme-icon-enter motion-reduce:animate-none" aria-hidden="true" />
+            {!mounted ? (
+              <>
+                <Sun className="hidden size-4.5 dark:block" aria-hidden="true" />
+                <Moon className="size-4.5 dark:hidden" aria-hidden="true" />
+              </>
+            ) : isDark ? (
+              <Sun key="sun" className={cn("size-4.5", iconAnimation)} aria-hidden="true" />
             ) : (
-              <Moon key="moon" className="size-4.5 animate-theme-icon-enter motion-reduce:animate-none" aria-hidden="true" />
+              <Moon key="moon" className={cn("size-4.5", iconAnimation)} aria-hidden="true" />
             )}
           </button>
 
