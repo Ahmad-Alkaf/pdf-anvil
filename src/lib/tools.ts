@@ -4,7 +4,8 @@
 //
 // Several pages can share one tool implementation (`kind`). Example: the
 // image-to-PDF component serves /jpg-to-pdf, /png-to-pdf, /webp-to-pdf, and
-// /image-to-pdf. Each page has its own title, H1, intro, and FAQ so search
+// /image-to-pdf; /combine-pdf is a variant of merge and /extract-pdf-pages is
+// a variant of split. Each page has its own title, H1, intro, and FAQ so search
 // engines and AI answers can match the exact query. The client map from
 // `kind` to component is src/components/tool/tool-registry.client.ts.
 
@@ -14,7 +15,9 @@ export type ToolKind = "merge" | "split" | "rotate" | "organize" | "images-to-pd
 
 export type ToolSlug =
   | "merge-pdf"
+  | "combine-pdf"
   | "split-pdf"
+  | "extract-pdf-pages"
   | "rotate-pdf"
   | "organize-pdf"
   | "jpg-to-pdf"
@@ -146,7 +149,74 @@ export const TOOLS: readonly ToolDef[] = [
       FREE_FAQ,
     ],
     related: ["split-pdf", "organize-pdf", "image-to-pdf"],
-    keywords: ["merge pdf", "combine pdf", "join pdf files", "pdf merger free", "merge pdf online"],
+    keywords: [
+      "merge pdf",
+      "pdf merger",
+      "pdf merge",
+      "combine pdf",
+      "pdf combiner",
+      "join pdf files",
+      "pdf merger free",
+      "merge pdf online",
+    ],
+  },
+  {
+    // Variant of "merge" for the query "combine pdf" / "pdf combiner".
+    slug: "combine-pdf",
+    kind: "merge",
+    nav: false,
+    name: "Combine PDF",
+    navLabel: "Combine",
+    title: "Combine PDF Files Online – Free PDF Combiner, No Upload",
+    description:
+      "Combine PDF files into one document with a free PDF combiner that runs in your browser. Set the file order, click once, download. No upload, no account.",
+    h1: "Combine PDF files",
+    intro:
+      "Put two or more PDF files together into one document. Add the files, set the order, and download the result. Your files stay on your device.",
+    icon: "Combine",
+    accept: PDF_ACCEPT,
+    multiple: true,
+    input: "pdf",
+    output: "pdf",
+    actionLabel: "Combine PDFs",
+    steps: [
+      "Add the PDF files you want to combine. Drop them into the box, or click to choose them.",
+      "Put the files in the correct order. Drag them, or use the arrow buttons.",
+      "Click Combine PDFs. Your browser builds one PDF and downloads it.",
+    ],
+    faq: [
+      {
+        q: "How do I combine PDF files into one?",
+        a: "Open this page and add your PDF files. Put them in order. Click Combine PDFs. The tool copies all pages into one new PDF and downloads it. There is no software to install.",
+      },
+      {
+        q: "Is this PDF combiner free?",
+        a: "Yes. There is no cost, no account, no watermark, and no limit on the number of files. Use it as often as you want.",
+      },
+      {
+        q: "Can I combine PDF files on my phone?",
+        a: "Yes. Open this page in the browser on your phone or tablet. Tap the box to choose files. The combined PDF is saved to your downloads.",
+      },
+      {
+        q: "What is the difference between combine and merge?",
+        a: "There is no difference. Combine, merge, and join all mean the same thing: put several PDF files into one. This page and the Merge PDF page use the same tool.",
+      },
+      {
+        q: "Do the pages keep their size and quality?",
+        a: "Yes. Each page is copied as it is. Nothing is re-rendered or compressed. Pages of different sizes can sit next to each other in one file.",
+      },
+      PRIVACY_FAQ,
+      LIMIT_FAQ,
+    ],
+    related: ["merge-pdf", "organize-pdf", "extract-pdf-pages"],
+    keywords: [
+      "combine pdf",
+      "pdf combiner",
+      "pdf combine",
+      "combine pdf files",
+      "combine pdf online free",
+      "put pdf files together",
+    ],
   },
   {
     slug: "split-pdf",
@@ -173,6 +243,10 @@ export const TOOLS: readonly ToolDef[] = [
     ],
     faq: [
       {
+        q: "How do I split a PDF into separate files?",
+        a: "Add the PDF and choose \"Every page\". Click Split PDF. Each page becomes its own PDF file. You get all files in one ZIP, or you download each one on its own.",
+      },
+      {
         q: "How do I write page ranges?",
         a: "Separate items with commas. \"3\" is one page. \"1-3\" is pages 1 to 3. \"8-\" is page 8 to the end. Each item becomes its own PDF file. Example: 1-3, 5, 8- makes three files.",
       },
@@ -189,7 +263,74 @@ export const TOOLS: readonly ToolDef[] = [
       FREE_FAQ,
     ],
     related: ["merge-pdf", "organize-pdf", "pdf-to-jpg"],
-    keywords: ["split pdf", "extract pdf pages", "pdf splitter", "separate pdf pages", "split pdf online free"],
+    keywords: [
+      "split pdf",
+      "pdf splitter",
+      "pdf split",
+      "how to split pdf files",
+      "split pdf into separate files",
+      "extract pdf pages",
+      "separate pdf pages",
+      "split pdf online free",
+    ],
+  },
+  {
+    // Variant of "split" for the query "extract pages from pdf" / "pdf splitter".
+    slug: "extract-pdf-pages",
+    kind: "split",
+    nav: false,
+    name: "Extract PDF Pages",
+    navLabel: "Extract pages",
+    title: "Extract Pages from PDF Online – Free PDF Splitter, No Upload",
+    description:
+      "Extract the pages you need from a PDF and save them as a new file. Type page numbers or ranges. Free PDF splitter in your browser. No upload, no account.",
+    h1: "Extract pages from a PDF",
+    intro:
+      "Pull the pages you need out of a PDF and save them as a new file. Type the page numbers, click once, and download. The PDF does not leave your device.",
+    icon: "Scissors",
+    accept: PDF_ACCEPT,
+    multiple: false,
+    input: "pdf",
+    output: "pdfs",
+    actionLabel: "Extract pages",
+    steps: [
+      "Add your PDF. Drop it into the box, or click to choose it.",
+      "Choose \"Page ranges\" and type the pages you want, for example 2, 5-7, 10-. Or choose \"Every page\" to get each page as its own file.",
+      "Click Extract pages. Each range becomes one PDF. You get a ZIP, or you download each file on its own.",
+    ],
+    faq: [
+      {
+        q: "How do I extract pages from a PDF?",
+        a: "Add the PDF and choose \"Page ranges\". Type the page numbers you want. Click Extract pages. Only those pages go into the new file. The original PDF is not changed.",
+      },
+      {
+        q: "Can I extract one page from a PDF?",
+        a: "Yes. Type one page number, for example 4. The tool saves that page as a new one-page PDF.",
+      },
+      {
+        q: "Can I save each page as a separate PDF?",
+        a: "Yes. Choose \"Every page\". Each page becomes its own PDF file. All files come in one ZIP, and you can also download them one by one.",
+      },
+      {
+        q: "Can I extract pages that are not next to each other?",
+        a: "Yes. Separate the items with commas, for example 1, 4, 9-11. Each item becomes one file. If you want all of them in one file, extract them first and then put the files together with the Combine PDF tool.",
+      },
+      {
+        q: "Is this PDF splitter free?",
+        a: "Yes. There is no cost, no account, no watermark, and no page limit. The PDF is processed in your browser and is never uploaded.",
+      },
+      PRIVACY_FAQ,
+      LIMIT_FAQ,
+    ],
+    related: ["split-pdf", "organize-pdf", "combine-pdf"],
+    keywords: [
+      "extract pdf pages",
+      "extract pages from pdf",
+      "pdf splitter",
+      "pdf page extractor",
+      "save pdf pages as new file",
+      "extract pdf pages online free",
+    ],
   },
   {
     slug: "rotate-pdf",
@@ -314,10 +455,21 @@ export const TOOLS: readonly ToolDef[] = [
         a: "Yes. The same tool accepts JPG, PNG, and WebP together. Each image becomes one page.",
       },
       PRIVACY_FAQ,
-      FREE_FAQ,
+      {
+        q: "Is it free to convert JPG to PDF here?",
+        a: "Yes. It is free, with no limit on the number of images and no watermark. The PDF is built in your browser, so your photos are not uploaded. You do not need an account.",
+      },
     ],
     related: ["png-to-pdf", "pdf-to-jpg", "merge-pdf"],
-    keywords: ["jpg to pdf", "jpeg to pdf", "convert jpg to pdf", "photo to pdf", "jpg to pdf online free"],
+    keywords: [
+      "jpg to pdf",
+      "jpg to pdf converter",
+      "convert jpg to pdf",
+      "convert jpg to pdf free",
+      "jpeg to pdf",
+      "photo to pdf",
+      "jpg to pdf online free",
+    ],
   },
   {
     slug: "png-to-pdf",
@@ -437,7 +589,16 @@ export const TOOLS: readonly ToolDef[] = [
       FREE_FAQ,
     ],
     related: ["jpg-to-pdf", "png-to-pdf", "pdf-to-image"],
-    keywords: ["image to pdf", "convert image to pdf", "picture to pdf", "photos to pdf", "images to pdf online free"],
+    keywords: [
+      "image to pdf",
+      "convert image to pdf",
+      "convert to pdf",
+      "pdf creator",
+      "pdf maker",
+      "picture to pdf",
+      "photos to pdf",
+      "images to pdf online free",
+    ],
   },
 
   // ---- PDF to images: one component, three pages ----
@@ -461,6 +622,10 @@ export const TOOLS: readonly ToolDef[] = [
     actionLabel: "Convert to images",
     steps: PDF_TO_IMAGE_STEPS,
     faq: [
+      {
+        q: "How do I save a PDF as a JPG?",
+        a: "Add the PDF to this page. Keep JPG as the format and choose a resolution. Click Convert to images. Each page is saved as a JPG file. Download them one by one or all together in a ZIP.",
+      },
       DPI_FAQ,
       {
         q: "When should I pick JPG over PNG?",
@@ -477,7 +642,16 @@ export const TOOLS: readonly ToolDef[] = [
     ],
     related: ["pdf-to-png", "jpg-to-pdf", "split-pdf"],
     defaults: { format: "jpg" },
-    keywords: ["pdf to jpg", "convert pdf to jpg", "pdf to jpeg", "pdf to jpg online free", "pdf page to jpg"],
+    keywords: [
+      "pdf to jpg",
+      "convert pdf to jpg",
+      "pdf to jpg converter",
+      "save pdf as jpg",
+      "how to save pdf as jpg",
+      "pdf to jpeg",
+      "pdf to jpg online free",
+      "pdf page to jpg",
+    ],
   },
   {
     slug: "pdf-to-png",

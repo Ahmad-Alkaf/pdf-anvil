@@ -53,6 +53,33 @@ describe("TOOLS registry", () => {
     expect(VARIANT_TOOLS.every((t) => !t.nav)).toBe(true);
   });
 
+  it("gives every variant a nav page of the same kind with different copy", () => {
+    for (const variant of VARIANT_TOOLS) {
+      const primary = NAV_TOOLS.find((t) => t.kind === variant.kind);
+      expect(primary, variant.slug).toBeDefined();
+      expect(variant.name, variant.slug).not.toBe(primary!.name);
+      expect(variant.intro, variant.slug).not.toBe(primary!.intro);
+      const primaryQuestions = new Set(primary!.faq.map((f) => f.q));
+      const ownQuestions = variant.faq.filter((f) => !primaryQuestions.has(f.q));
+      expect(ownQuestions.length, `${variant.slug} needs FAQ entries of its own`).toBeGreaterThan(0);
+    }
+  });
+
+  it("registers the search-query variants of merge and split", () => {
+    expect(getTool("combine-pdf")).toMatchObject({ kind: "merge", nav: false, input: "pdf", output: "pdf" });
+    expect(getTool("extract-pdf-pages")).toMatchObject({ kind: "split", nav: false, input: "pdf", output: "pdfs" });
+    expect(VARIANT_TOOLS.map((t) => t.slug)).toEqual(expect.arrayContaining(["combine-pdf", "extract-pdf-pages"]));
+  });
+
+  it("has no repeated keywords or FAQ questions inside one page", () => {
+    for (const tool of TOOLS) {
+      const keywords = tool.keywords.map((k) => k.toLowerCase());
+      expect(new Set(keywords).size, `${tool.slug} keywords`).toBe(keywords.length);
+      const questions = tool.faq.map((f) => f.q);
+      expect(new Set(questions).size, `${tool.slug} faq`).toBe(questions.length);
+    }
+  });
+
   it("matches the accept list to the input type", () => {
     for (const tool of TOOLS) {
       const mimes = Object.keys(tool.accept);
