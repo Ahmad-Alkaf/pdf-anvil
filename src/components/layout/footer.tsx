@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Logo } from "@/components/logo";
 import { KAFLABS_PRIVACY_URL, KAFLABS_TERMS_URL, KAFLABS_URL, SUPPORT_EMAIL } from "@/lib/site";
-import { TOOLS } from "@/lib/tools";
+import { TOOLS_BY_PRIORITY } from "@/lib/tools";
 
 export function Footer() {
   return (
@@ -32,7 +32,7 @@ export function Footer() {
           <div>
             <h2 className="text-sm font-semibold">Tools</h2>
             <ul className="mt-3 grid grid-cols-2 gap-x-6 gap-y-2 md:grid-cols-3">
-              {TOOLS.map((tool) => (
+              {TOOLS_BY_PRIORITY.map((tool) => (
                 <li key={tool.slug}>
                   <Link
                     href={`/${tool.slug}`}

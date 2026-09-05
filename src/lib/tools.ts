@@ -66,6 +66,12 @@ export interface ToolDef {
   kind: ToolKind;
   /** Shown in the header and as a home page card. Variants of a kind set this to false. */
   nav: boolean;
+  /**
+   * Display order across the header, home grid, and footer. 1 is first. Set from
+   * Bing Webmaster keyword impressions (3 months, Jun-Sep 2026, all phrasings
+   * for the page). Unique per tool. Header shows the first HEADER_LIMIT nav tools.
+   */
+  priority: number;
   name: string; // "Merge PDF"
   navLabel: string; // "Merge"
   title: string; // <title>, goes through "%s | PDF Anvil"
@@ -151,6 +157,7 @@ export const TOOLS: readonly ToolDef[] = [
     slug: "merge-pdf",
     kind: "merge",
     nav: true,
+    priority: 1, // Bing 3.1M
     name: "Merge PDF",
     navLabel: "Merge",
     title: "Merge PDF Files Online – Free, Private, No Upload",
@@ -204,6 +211,7 @@ export const TOOLS: readonly ToolDef[] = [
     slug: "combine-pdf",
     kind: "merge",
     nav: false,
+    priority: 13, // Bing 369K
     name: "Combine PDF",
     navLabel: "Combine",
     title: "Combine PDF Files Online – Free PDF Combiner, No Upload",
@@ -261,6 +269,7 @@ export const TOOLS: readonly ToolDef[] = [
     slug: "split-pdf",
     kind: "split",
     nav: true,
+    priority: 5, // Bing 0.7M
     name: "Split PDF",
     navLabel: "Split",
     title: "Split PDF Online – Extract Pages or Split by Range",
@@ -318,6 +327,7 @@ export const TOOLS: readonly ToolDef[] = [
     slug: "extract-pdf-pages",
     kind: "split",
     nav: false,
+    priority: 17, // Bing 89K
     name: "Extract PDF Pages",
     navLabel: "Extract pages",
     title: "Extract Pages from PDF Online – Free PDF Splitter, No Upload",
@@ -375,6 +385,7 @@ export const TOOLS: readonly ToolDef[] = [
     slug: "rotate-pdf",
     kind: "rotate",
     nav: true,
+    priority: 9, // Bing under 40K
     name: "Rotate PDF",
     navLabel: "Rotate",
     title: "Rotate PDF Pages Online – Fix Sideways Pages Free",
@@ -418,6 +429,7 @@ export const TOOLS: readonly ToolDef[] = [
     slug: "organize-pdf",
     kind: "organize",
     nav: true,
+    priority: 10, // Bing 38K
     name: "Organize PDF",
     navLabel: "Organize",
     title: "Organize PDF Pages – Reorder and Delete Pages Online",
@@ -463,6 +475,7 @@ export const TOOLS: readonly ToolDef[] = [
     slug: "jpg-to-pdf",
     kind: "images-to-pdf",
     nav: false,
+    priority: 11, // Bing 2.0M
     name: "JPG to PDF",
     navLabel: "JPG to PDF",
     title: "JPG to PDF – Convert JPG Images to PDF Online, Free",
@@ -514,6 +527,7 @@ export const TOOLS: readonly ToolDef[] = [
     slug: "png-to-pdf",
     kind: "images-to-pdf",
     nav: false,
+    priority: 14, // Bing 231K
     name: "PNG to PDF",
     navLabel: "PNG to PDF",
     title: "PNG to PDF – Convert PNG Images to PDF Online, Free",
@@ -554,6 +568,7 @@ export const TOOLS: readonly ToolDef[] = [
     slug: "webp-to-pdf",
     kind: "images-to-pdf",
     nav: false,
+    priority: 19, // Bing under 40K
     name: "WebP to PDF",
     navLabel: "WebP to PDF",
     title: "WebP to PDF – Convert WebP Images to PDF Online, Free",
@@ -594,6 +609,7 @@ export const TOOLS: readonly ToolDef[] = [
     slug: "image-to-pdf",
     kind: "images-to-pdf",
     nav: true,
+    priority: 2, // Bing 3.0M
     name: "Image to PDF",
     navLabel: "Image to PDF",
     title: "Image to PDF – Convert JPG, PNG, WebP Images to PDF Free",
@@ -644,6 +660,7 @@ export const TOOLS: readonly ToolDef[] = [
     slug: "scan-to-pdf",
     kind: "images-to-pdf",
     nav: false,
+    priority: 18, // Bing 77K
     name: "Scan to PDF",
     navLabel: "Scan to PDF",
     title: "Scan Documents to PDF Online – Use Your Phone Camera, Free",
@@ -701,6 +718,7 @@ export const TOOLS: readonly ToolDef[] = [
     slug: "pdf-to-jpg",
     kind: "pdf-to-images",
     nav: false,
+    priority: 12, // Bing 1.5M
     name: "PDF to JPG",
     navLabel: "PDF to JPG",
     title: "PDF to JPG – Convert PDF Pages to JPG Images Online",
@@ -752,6 +770,7 @@ export const TOOLS: readonly ToolDef[] = [
     slug: "pdf-to-png",
     kind: "pdf-to-images",
     nav: false,
+    priority: 16, // Bing 169K
     name: "PDF to PNG",
     navLabel: "PDF to PNG",
     title: "PDF to PNG – Convert PDF Pages to PNG Images Online",
@@ -790,6 +809,7 @@ export const TOOLS: readonly ToolDef[] = [
     slug: "pdf-to-image",
     kind: "pdf-to-images",
     nav: true,
+    priority: 3, // Bing 2.2M
     name: "PDF to Image",
     navLabel: "PDF to Image",
     title: "PDF to Image – Convert PDF Pages to JPG or PNG Online",
@@ -829,6 +849,7 @@ export const TOOLS: readonly ToolDef[] = [
     slug: "compress-pdf",
     kind: "compress",
     nav: true,
+    priority: 4, // Bing 1.8M
     name: "Compress PDF",
     navLabel: "Compress",
     title: "Compress PDF Online – Reduce PDF File Size Free, No Upload",
@@ -888,6 +909,7 @@ export const TOOLS: readonly ToolDef[] = [
     slug: "reduce-pdf-size",
     kind: "compress",
     nav: false,
+    priority: 15, // Bing 190K
     name: "Reduce PDF Size",
     navLabel: "Reduce size",
     title: "Reduce PDF File Size Online – Free PDF Size Reducer, No Upload",
@@ -946,6 +968,7 @@ export const TOOLS: readonly ToolDef[] = [
     slug: "unlock-pdf",
     kind: "unlock",
     nav: true,
+    priority: 7, // Bing 99K
     name: "Unlock PDF",
     navLabel: "Unlock",
     title: "Unlock PDF – Remove Password from PDF Online, Free, No Upload",
@@ -1001,6 +1024,7 @@ export const TOOLS: readonly ToolDef[] = [
     slug: "protect-pdf",
     kind: "protect",
     nav: true,
+    priority: 8, // Bing under 40K
     name: "Protect PDF",
     navLabel: "Protect",
     title: "Protect PDF – Add a Password to a PDF Online, Free, No Upload",
@@ -1061,6 +1085,7 @@ export const TOOLS: readonly ToolDef[] = [
     slug: "pdf-viewer",
     kind: "view",
     nav: true,
+    priority: 6, // Bing 0.5M
     name: "PDF Viewer",
     navLabel: "View",
     title: "Open PDF File Online – Free PDF Viewer, No Upload",
@@ -1125,8 +1150,17 @@ export const TOOLS: readonly ToolDef[] = [
   },
 ];
 
-export const NAV_TOOLS: readonly ToolDef[] = TOOLS.filter((t) => t.nav);
-export const VARIANT_TOOLS: readonly ToolDef[] = TOOLS.filter((t) => !t.nav);
+const byPriority = (a: ToolDef, b: ToolDef) => a.priority - b.priority;
+
+/** Primary page of each kind, most searched first. Home grid and mobile menu. */
+export const NAV_TOOLS: readonly ToolDef[] = TOOLS.filter((t) => t.nav).sort(byPriority);
+/** Keyword variant pages, most searched first. */
+export const VARIANT_TOOLS: readonly ToolDef[] = TOOLS.filter((t) => !t.nav).sort(byPriority);
+/** Every page, most searched first. Footer. */
+export const TOOLS_BY_PRIORITY: readonly ToolDef[] = [...NAV_TOOLS, ...VARIANT_TOOLS];
+/** How many direct links the desktop header shows. The rest sit in "All tools". */
+export const HEADER_LIMIT = 5;
+export const HEADER_TOOLS: readonly ToolDef[] = NAV_TOOLS.slice(0, HEADER_LIMIT);
 
 export function getTool(slug: string): ToolDef | undefined {
   return TOOLS.find((t) => t.slug === slug);

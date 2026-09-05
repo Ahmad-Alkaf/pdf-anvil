@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { getTool, isToolSlug, NAV_TOOLS, TOOLS, VARIANT_TOOLS, type ToolKind } from "@/lib/tools";
+import { getTool, HEADER_LIMIT, HEADER_TOOLS, isToolSlug, NAV_TOOLS, TOOLS, TOOLS_BY_PRIORITY, VARIANT_TOOLS, type ToolKind } from "@/lib/tools";
 
 /** Keys of TOOL_COMPONENTS in the client registry, read from the source text. */
 function clientRegistryKinds(): string[] {
@@ -51,6 +51,28 @@ describe("TOOLS registry", () => {
     expect(NAV_TOOLS.length + VARIANT_TOOLS.length).toBe(TOOLS.length);
     expect(NAV_TOOLS.every((t) => t.nav)).toBe(true);
     expect(VARIANT_TOOLS.every((t) => !t.nav)).toBe(true);
+  });
+
+  it("orders every list by a unique priority", () => {
+    const priorities = TOOLS.map((t) => t.priority);
+    expect(new Set(priorities).size).toBe(TOOLS.length);
+    expect(priorities.every((p) => Number.isInteger(p) && p >= 1)).toBe(true);
+    for (const list of [NAV_TOOLS, VARIANT_TOOLS, TOOLS_BY_PRIORITY]) {
+      const got = list.map((t) => t.priority);
+      expect(got).toEqual([...got].sort((a, b) => a - b));
+    }
+    expect(TOOLS_BY_PRIORITY.length).toBe(TOOLS.length);
+    // Nav pages come before their variants so the footer and the "All tools" panel read top-down.
+    expect(Math.max(...NAV_TOOLS.map((t) => t.priority))).toBeLessThan(Math.min(...VARIANT_TOOLS.map((t) => t.priority)));
+  });
+
+  it("keeps the header to a fixed budget of the most searched nav tools", () => {
+    expect(HEADER_LIMIT).toBe(5);
+    expect(HEADER_TOOLS.length).toBeLessThanOrEqual(HEADER_LIMIT);
+    expect(HEADER_TOOLS).toEqual(NAV_TOOLS.slice(0, HEADER_LIMIT));
+    expect(HEADER_TOOLS.map((t) => t.slug)).toEqual(["merge-pdf", "image-to-pdf", "pdf-to-image", "compress-pdf", "split-pdf"]);
+    // Labels must stay short so five of them fit next to the logo at 1024 px.
+    expect(HEADER_TOOLS.every((t) => t.navLabel.length <= 14)).toBe(true);
   });
 
   it("gives every variant a nav page of the same kind with different copy", () => {
