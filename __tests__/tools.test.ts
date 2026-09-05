@@ -71,6 +71,19 @@ describe("TOOLS registry", () => {
     expect(VARIANT_TOOLS.map((t) => t.slug)).toEqual(expect.arrayContaining(["combine-pdf", "extract-pdf-pages"]));
   });
 
+  it("registers compress as a nav tool with a reduce-pdf-size variant", () => {
+    const compress = getTool("compress-pdf");
+    expect(compress).toMatchObject({ kind: "compress", nav: true, input: "pdf", output: "pdf", icon: "FileDown" });
+    expect(compress!.keywords).toEqual(
+      expect.arrayContaining(["compress pdf", "pdf compressor", "reduce pdf size", "pdf size reducer", "shrink pdf"]),
+    );
+    expect(compress!.faq.some((f) => /not get smaller/i.test(f.q))).toBe(true);
+    expect(compress!.faq.some((f) => /quality of the text/i.test(f.q))).toBe(true);
+    expect(getTool("reduce-pdf-size")).toMatchObject({ kind: "compress", nav: false, input: "pdf", output: "pdf" });
+    expect(getTool("reduce-pdf-size")!.keywords).toEqual(expect.arrayContaining(["reduce pdf size", "pdf size reducer"]));
+    expect(VARIANT_TOOLS.map((t) => t.slug)).toContain("reduce-pdf-size");
+  });
+
   it("registers the viewer as a nav tool with no output", () => {
     const viewer = getTool("pdf-viewer");
     expect(viewer).toMatchObject({ kind: "view", nav: true, input: "pdf", output: "none", icon: "BookOpen" });
@@ -131,8 +144,8 @@ describe("getTool / isToolSlug", () => {
   });
 
   it("returns undefined / false for unknown slugs", () => {
-    expect(getTool("compress-pdf")).toBeUndefined();
-    expect(isToolSlug("compress-pdf")).toBe(false);
+    expect(getTool("encrypt-pdf")).toBeUndefined();
+    expect(isToolSlug("encrypt-pdf")).toBe(false);
     expect(isToolSlug("")).toBe(false);
   });
 });

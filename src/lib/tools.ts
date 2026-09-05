@@ -11,7 +11,7 @@
 
 import { IMAGE_ACCEPT, PDF_ACCEPT } from "./files";
 
-export type ToolKind = "merge" | "split" | "rotate" | "organize" | "images-to-pdf" | "pdf-to-images" | "view";
+export type ToolKind = "merge" | "split" | "rotate" | "organize" | "images-to-pdf" | "pdf-to-images" | "view" | "compress";
 
 export type ToolSlug =
   | "merge-pdf"
@@ -27,9 +27,11 @@ export type ToolSlug =
   | "pdf-to-jpg"
   | "pdf-to-png"
   | "pdf-to-image"
-  | "pdf-viewer";
+  | "pdf-viewer"
+  | "compress-pdf"
+  | "reduce-pdf-size";
 
-export type ToolIcon = "Combine" | "Scissors" | "RotateCw" | "LayoutGrid" | "ImagePlus" | "Images" | "BookOpen";
+export type ToolIcon = "Combine" | "Scissors" | "RotateCw" | "LayoutGrid" | "ImagePlus" | "Images" | "BookOpen" | "FileDown";
 
 export interface ToolFaq {
   q: string;
@@ -730,6 +732,123 @@ export const TOOLS: readonly ToolDef[] = [
     related: ["pdf-to-jpg", "pdf-to-png", "image-to-pdf"],
     defaults: { format: "jpg" },
     keywords: ["pdf to image", "convert pdf to image", "pdf to picture", "pdf page to image", "pdf to image online free"],
+  },
+  // ---- compress: one component, two pages ----
+  {
+    slug: "compress-pdf",
+    kind: "compress",
+    nav: true,
+    name: "Compress PDF",
+    navLabel: "Compress",
+    title: "Compress PDF Online – Reduce PDF File Size Free, No Upload",
+    description:
+      "Compress a PDF in your browser. Pick lossless, balanced, or smallest. Large photos are re-encoded, text stays sharp. Free, no upload, no account, no limit.",
+    h1: "Compress PDF",
+    intro:
+      "Make a PDF smaller. Pick a level, click once, and download. Text and vector graphics stay sharp. Your file never leaves your device.",
+    icon: "FileDown",
+    accept: PDF_ACCEPT,
+    multiple: false,
+    input: "pdf",
+    output: "pdf",
+    actionLabel: "Compress PDF",
+    steps: [
+      "Drop a PDF into the box, or click to choose it.",
+      "Pick a level. Lossless keeps every pixel. Balanced is the best choice for most files. Smallest gives the smallest file.",
+      "Click Compress PDF. The tool shows the old size and the new size, and the file downloads at once.",
+    ],
+    faq: [
+      {
+        q: "How much smaller will my PDF get?",
+        a: "It depends on what is in the file. A PDF full of large photos or scans can shrink by 50 to 90 percent with the Balanced level. A PDF that holds only text and vector graphics shrinks much less, often by 5 to 20 percent, because there is nothing large to re-encode. The tool shows the old size and the new size after each run.",
+      },
+      {
+        q: "Which level should I choose?",
+        a: "Balanced is the best choice for most files. It limits images to 1600 pixels on the long side, which is sharp on a screen and fine for normal printing. Choose Smallest for email attachments and upload limits. It limits images to 1100 pixels and uses stronger JPEG compression. Choose Lossless when the images must stay exactly as they are. It only cleans the file structure and removes unused data.",
+      },
+      {
+        q: "Does compression lower the quality of the text?",
+        a: "No. Text, fonts, lines, and vector graphics are not changed at any level. Only large photos and scans are re-encoded, and only in the Balanced and Smallest levels. If the new image is not smaller than the old one, the old one is kept.",
+      },
+      {
+        q: "Why did my file not get smaller?",
+        a: "Some files are already as small as they can be. The images in them are already small JPEGs, or the file has no images at all, only text and vector shapes. Files that another tool has already compressed also show little change. In that case the tool tells you that the file was already compact.",
+      },
+      {
+        q: "Which images does the tool compress?",
+        a: "JPEG images and uncompressed or Flate-compressed RGB and grayscale images that are at least 64 KB and at least 200 pixels wide or high. Images with transparency, indexed colors, CMYK, or unusual color spaces are kept as they are so the colors cannot go wrong.",
+      },
+      PRIVACY_FAQ,
+      LIMIT_FAQ,
+      FREE_FAQ,
+    ],
+    related: ["merge-pdf", "split-pdf", "pdf-to-jpg"],
+    keywords: [
+      "compress pdf",
+      "pdf compressor",
+      "reduce pdf size",
+      "pdf size reducer",
+      "shrink pdf",
+      "compress pdf online free",
+    ],
+  },
+  {
+    // Variant of "compress" for the query "reduce pdf size" / "pdf size reducer".
+    slug: "reduce-pdf-size",
+    kind: "compress",
+    nav: false,
+    name: "Reduce PDF Size",
+    navLabel: "Reduce size",
+    title: "Reduce PDF File Size Online – Free PDF Size Reducer, No Upload",
+    description:
+      "Reduce the size of a PDF for email and uploads. A free PDF size reducer that runs in your browser. Three levels, before and after sizes. No upload, no account.",
+    h1: "Reduce PDF file size",
+    intro:
+      "Bring a PDF under an email or upload limit. Choose how small it must get, click once, and see the old and new size. The PDF stays on your device.",
+    icon: "FileDown",
+    accept: PDF_ACCEPT,
+    multiple: false,
+    input: "pdf",
+    output: "pdf",
+    actionLabel: "Reduce size",
+    steps: [
+      "Add your PDF. Drop it into the box, or click to choose it.",
+      "Choose a level. Start with Balanced. If the file is still too large, run it again with Smallest.",
+      "Click Reduce size. The tool shows how many percent it saved, and the smaller file downloads at once.",
+    ],
+    faq: [
+      {
+        q: "How do I reduce the size of a PDF?",
+        a: "Add the PDF to this page and choose a level. Click Reduce size. The tool rewrites the file, removes unused data, and makes large photos smaller. The new PDF downloads at once, and the page shows the old and new size.",
+      },
+      {
+        q: "How do I get a PDF under 1 MB or under 5 MB?",
+        a: "Run the file with the Balanced level and read the new size. If it is still above the limit, run it again with Smallest. If the file is still too large, it contains many pages of images. Split it into parts with the Split PDF tool and send each part.",
+      },
+      {
+        q: "Does the PDF size reducer change the text?",
+        a: "No. Text and vector graphics are copied as they are. Only large photos and scans are made smaller. Text stays sharp on screen and in print.",
+      },
+      {
+        q: "Why is my PDF so large?",
+        a: "In most cases, the file holds photos or scanned pages at a very high resolution. A scanned page at 600 DPI can take several megabytes. The Balanced level limits images to 1600 pixels on the long side, which is enough for reading and normal printing.",
+      },
+      {
+        q: "Is this PDF size reducer free?",
+        a: "Yes. There is no cost, no account, no watermark, and no limit on the number of files. The PDF is processed in your browser and is never uploaded.",
+      },
+      PRIVACY_FAQ,
+      LIMIT_FAQ,
+    ],
+    related: ["compress-pdf", "split-pdf", "pdf-to-jpg"],
+    keywords: [
+      "reduce pdf size",
+      "pdf size reducer",
+      "reduce pdf file size",
+      "make pdf smaller",
+      "pdf reducer",
+      "reduce pdf size online free",
+    ],
   },
   // ---- viewer: shows the file, makes no output ----
   {

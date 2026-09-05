@@ -13,11 +13,13 @@ interface Props {
   onStartOver: () => void;
   note?: string;
   previews?: boolean; // show image thumbnails
+  /** Small figures shown under the file name, such as before/after sizes. */
+  stats?: { label: string; value: string }[];
 }
 
 type AutoState = "pending" | "started" | "failed";
 
-export function ResultPanel({ results, zipName, onStartOver, note, previews }: Props) {
+export function ResultPanel({ results, zipName, onStartOver, note, previews, stats }: Props) {
   const [zipping, setZipping] = useState(false);
   const [auto, setAuto] = useState<AutoState>("pending");
   // The ZIP is built once and reused when the user clicks "Download all" again.
@@ -89,6 +91,16 @@ export function ResultPanel({ results, zipName, onStartOver, note, previews }: P
       <p className="mt-1 text-sm text-muted-foreground" role="status" aria-live="polite">
         {autoText}
       </p>
+      {stats && stats.length > 0 && (
+        <dl className="mt-4 grid grid-cols-3 gap-2 text-center">
+          {stats.map((s) => (
+            <div key={s.label} className="rounded-lg border bg-background px-2 py-2">
+              <dt className="text-xs text-muted-foreground">{s.label}</dt>
+              <dd className="text-lg font-bold tabular-nums">{s.value}</dd>
+            </div>
+          ))}
+        </dl>
+      )}
       {note && <p className="mt-2 text-sm text-muted-foreground">{note}</p>}
 
       <div className="mt-4 flex flex-wrap gap-2">
