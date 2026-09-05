@@ -74,7 +74,10 @@ describe("locale folders", () => {
         expect(slugs).not.toContain("about");
         for (const slug of slugs) {
           expect(slug, `${code}/${slug}`).toMatch(LATIN_SLUG);
-          if (bundle.meta.script === "other") expect(ENGLISH_SLUGS.has(slug), `${code}/${slug} must keep the English slug`).toBe(true);
+          if (bundle.meta.script === "other") {
+            const page = bundle.pages.find((p) => p.slug === slug)!;
+            if (!page.id.includes(":")) expect(slug, `${code}/${slug} must keep the English slug ${page.id}`).toBe(page.id);
+          }
         }
       });
 

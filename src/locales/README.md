@@ -71,7 +71,7 @@ A variant is a second page of a kind for a different search phrase (`nav: false`
 ### (c) Slugs
 
 - Latin-script locales (`script: "latin"`): lowercase, ASCII `a-z`, `0-9`, and hyphens only. No accents, no other characters. Translate the slug into the most searched phrase of the language: Spanish `merge-pdf` becomes `unir-pdf`, not `fusionar-pdf`, if "unir pdf" is what people search.
-- Non-Latin-script locales (`script: "other"`): keep the English slug unchanged. The test rejects any other slug.
+- Non-Latin-script locales (`script: "other"`): a mirrored page keeps the English slug unchanged (`slug === id`). A locale-only variant uses an ASCII slug of your choice, for example `tahrir-pdf`. The test rejects anything else.
 - Slugs are unique inside the locale. `about` is reserved.
 
 ### (d) Ids
