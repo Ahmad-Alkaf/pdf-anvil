@@ -20,4 +20,5 @@ export const TOOL_COMPONENTS: Record<ToolKind, ComponentType<ToolProps>> = {
   organize: dynamic(() => import("./tools/organize-tool").then((m) => m.OrganizeTool), { ssr: false }),
   "images-to-pdf": dynamic(() => import("./tools/images-to-pdf-tool").then((m) => m.ImagesToPdfTool), { ssr: false }),
   "pdf-to-images": dynamic(() => import("./tools/pdf-to-images-tool").then((m) => m.PdfToImagesTool), { ssr: false }),
+  view: dynamic(() => import("./tools/view-tool").then((m) => m.ViewTool), { ssr: false }),
 };

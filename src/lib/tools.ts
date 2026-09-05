@@ -11,7 +11,7 @@
 
 import { IMAGE_ACCEPT, PDF_ACCEPT } from "./files";
 
-export type ToolKind = "merge" | "split" | "rotate" | "organize" | "images-to-pdf" | "pdf-to-images";
+export type ToolKind = "merge" | "split" | "rotate" | "organize" | "images-to-pdf" | "pdf-to-images" | "view";
 
 export type ToolSlug =
   | "merge-pdf"
@@ -26,9 +26,10 @@ export type ToolSlug =
   | "image-to-pdf"
   | "pdf-to-jpg"
   | "pdf-to-png"
-  | "pdf-to-image";
+  | "pdf-to-image"
+  | "pdf-viewer";
 
-export type ToolIcon = "Combine" | "Scissors" | "RotateCw" | "LayoutGrid" | "ImagePlus" | "Images";
+export type ToolIcon = "Combine" | "Scissors" | "RotateCw" | "LayoutGrid" | "ImagePlus" | "Images" | "BookOpen";
 
 export interface ToolFaq {
   q: string;
@@ -50,8 +51,9 @@ export interface ToolDef {
   accept: Record<string, string[]>;
   multiple: boolean;
   input: "pdf" | "images";
-  output: "pdf" | "pdfs" | "images";
-  actionLabel: string; // button text
+  /** "none" for tools that only show the file, such as the viewer. */
+  output: "pdf" | "pdfs" | "images" | "none";
+  actionLabel: string; // main button text
   steps: [string, string, string];
   faq: ToolFaq[];
   related: ToolSlug[];
@@ -728,6 +730,73 @@ export const TOOLS: readonly ToolDef[] = [
     related: ["pdf-to-jpg", "pdf-to-png", "image-to-pdf"],
     defaults: { format: "jpg" },
     keywords: ["pdf to image", "convert pdf to image", "pdf to picture", "pdf page to image", "pdf to image online free"],
+  },
+  // ---- viewer: shows the file, makes no output ----
+  {
+    slug: "pdf-viewer",
+    kind: "view",
+    nav: true,
+    name: "PDF Viewer",
+    navLabel: "View",
+    title: "Open PDF File Online – Free PDF Viewer, No Upload",
+    description:
+      "Open and read a PDF file in your browser. Scroll the pages, zoom in, and print. Free PDF viewer with no upload, no account, and no Adobe software to install.",
+    h1: "Open and read a PDF",
+    intro:
+      "Open a PDF file and read it in your browser. Scroll through the pages, zoom in, and print. The file stays on your device.",
+    icon: "BookOpen",
+    accept: PDF_ACCEPT,
+    multiple: false,
+    input: "pdf",
+    output: "none",
+    actionLabel: "Print",
+    steps: [
+      "Drop a PDF into the box, or click to choose it.",
+      "Scroll through the pages. Use the toolbar to go to a page, zoom in, zoom out, or fit the page to the width of the window.",
+      "Click Print to open the file in a new tab and print it from your browser. Click the X next to the file name to open a different file.",
+    ],
+    faq: [
+      {
+        q: "How do I open a PDF file without Adobe?",
+        a: "Drop the file on this page, or click the box and choose it. You do not need Adobe Acrobat or Adobe Reader. The page draws the PDF with the same open-source engine that Firefox uses. It works in Chrome, Edge, Firefox, and Safari. There is nothing to install.",
+      },
+      {
+        q: "What is a PDF reader?",
+        a: "A PDF reader is a program that opens PDF files and shows the pages on your screen. Adobe Reader is one example. Most browsers also have one built in. This page is a PDF reader that runs as a web page. It draws each page in your browser and does not send the file anywhere.",
+      },
+      {
+        q: "Is my PDF uploaded when I open it?",
+        a: "No. The file is read by JavaScript on your own device and drawn on your screen there. Nothing is sent to a server. You can check this in the network panel of your browser: no request carries your file.",
+      },
+      {
+        q: "Does the viewer work offline?",
+        a: "Mostly. The file is opened in your browser, and no data goes to a server. The viewer code and some fonts load from our site when they are needed for the first time. Open the page and one file while you are online. After that, you can open more files without a connection until you close the tab.",
+      },
+      {
+        q: "Can I print the PDF?",
+        a: "Yes. Click Print in the toolbar. The file opens in a new tab in the PDF viewer of your browser. Press Ctrl+P (Cmd+P on a Mac) there to print it. The browser prints the original file, so the text stays sharp on paper.",
+      },
+      {
+        q: "Can I zoom in?",
+        a: "Yes. Use the plus and minus buttons in the toolbar, or click Fit width to make the page as wide as the window. Each page is drawn again at the new size, so the text stays sharp at every zoom level.",
+      },
+      {
+        q: "Can I edit the PDF here?",
+        a: "No. This tool only shows the file. To change the file, use the other tools on this site: rotate pages, reorder or delete pages, split, merge, or convert pages to images.",
+      },
+      LIMIT_FAQ,
+      FREE_FAQ,
+    ],
+    related: ["rotate-pdf", "organize-pdf", "pdf-to-jpg"],
+    keywords: [
+      "open pdf file",
+      "pdf viewer",
+      "pdf reader",
+      "pdf reader online",
+      "view pdf online",
+      "read pdf without adobe",
+      "open pdf online free",
+    ],
   },
 ];
 

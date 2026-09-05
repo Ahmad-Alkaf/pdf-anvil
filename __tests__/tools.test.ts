@@ -71,6 +71,22 @@ describe("TOOLS registry", () => {
     expect(VARIANT_TOOLS.map((t) => t.slug)).toEqual(expect.arrayContaining(["combine-pdf", "extract-pdf-pages"]));
   });
 
+  it("registers the viewer as a nav tool with no output", () => {
+    const viewer = getTool("pdf-viewer");
+    expect(viewer).toMatchObject({ kind: "view", nav: true, input: "pdf", output: "none", icon: "BookOpen" });
+    expect(TOOLS.filter((t) => t.kind === "view")).toHaveLength(1);
+    expect(NAV_TOOLS.some((t) => t.slug === "pdf-viewer")).toBe(true);
+    expect(viewer!.keywords).toEqual(expect.arrayContaining(["open pdf file", "pdf viewer", "pdf reader online"]));
+    expect(viewer!.faq.some((f) => /what is a pdf reader/i.test(f.q))).toBe(true);
+  });
+
+  it("gives every tool with an output a download-style action label", () => {
+    for (const tool of TOOLS) {
+      if (tool.output === "none") expect(tool.actionLabel, tool.slug).toBe("Print");
+      else expect(tool.actionLabel, tool.slug).not.toBe("Print");
+    }
+  });
+
   it("has no repeated keywords or FAQ questions inside one page", () => {
     for (const tool of TOOLS) {
       const keywords = tool.keywords.map((k) => k.toLowerCase());

@@ -65,7 +65,9 @@ export default async function ToolPage({ params }: Props) {
     {
       "@context": "https://schema.org",
       "@type": "HowTo",
-      name: `How to ${tool.name.toLowerCase()} online for free`,
+      // "How to merge PDF files online for free". The H1 is a verb phrase; the
+      // name is not ("PDF Viewer").
+      name: `How to ${tool.h1.charAt(0).toLowerCase()}${tool.h1.slice(1)} online for free`,
       description: tool.intro,
       totalTime: "PT1M",
       step: tool.steps.map((text, i) => ({ "@type": "HowToStep", position: i + 1, text })),

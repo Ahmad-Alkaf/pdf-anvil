@@ -2,8 +2,8 @@ import type { PDFDocumentProxy } from "./pdfjs";
 
 export const THUMB_WIDTH = 160;
 
-/** Serial queue so many visible thumbnails do not render at once. */
-class RenderQueue {
+/** Bounded queue so many visible pages do not render at once. */
+export class RenderQueue {
   private running = 0;
   private readonly waiting: (() => void)[] = [];
   constructor(private readonly limit: number) {}
