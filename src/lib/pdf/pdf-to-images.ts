@@ -1,6 +1,6 @@
 import { closePdf, openPdf } from "./pdfjs";
 import { toPdfError } from "./errors";
-import type { Progress } from "./merge";
+import type { Progress } from "./progress";
 
 export type ImageFormat = "jpg" | "png";
 export type Dpi = 72 | 150 | 300;
@@ -52,7 +52,7 @@ export async function pdfToImages(
   try {
     for (let i = 0; i < indices.length; i++) {
       const pageNumber = indices[i] + 1;
-      onProgress?.(i, indices.length, `Rendering page ${pageNumber}`);
+      onProgress?.(i, indices.length, { key: "rendering", page: pageNumber });
       const page = await doc.getPage(pageNumber);
       let scale = options.dpi / 72;
       let viewport = page.getViewport({ scale });

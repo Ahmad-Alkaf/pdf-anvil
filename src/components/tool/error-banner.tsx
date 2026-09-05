@@ -1,6 +1,10 @@
+"use client";
+
 import { CircleAlert, X } from "lucide-react";
+import { useMessages } from "@/locales/context";
 
 export function ErrorBanner({ message, onDismiss }: { message: string; onDismiss?: () => void }) {
+  const m = useMessages();
   return (
     <div
       role="alert"
@@ -9,7 +13,7 @@ export function ErrorBanner({ message, onDismiss }: { message: string; onDismiss
       <CircleAlert className="mt-0.5 size-4 shrink-0 text-destructive" aria-hidden="true" />
       <span className="flex-1">{message}</span>
       {onDismiss && (
-        <button type="button" onClick={onDismiss} aria-label="Dismiss" className="rounded p-0.5 hover:bg-muted">
+        <button type="button" onClick={onDismiss} aria-label={m.common.dismiss} className="rounded p-0.5 hover:bg-muted">
           <X className="size-4" />
         </button>
       )}

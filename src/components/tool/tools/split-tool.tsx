@@ -15,9 +15,14 @@ import { splitPdf, type SplitMode } from "@/lib/pdf/split";
 import { parseRanges } from "@/lib/pdf/ranges";
 import { bytesToBlob } from "@/lib/download";
 import { outputName, splitPartName } from "@/lib/names";
-import type { ToolDef } from "@/lib/tools";
+import { toPdfError } from "@/lib/pdf/errors";
+import { useMessages } from "@/locales/context";
+import { errorMessage, plural } from "@/locales/format";
+import type { ToolPage } from "@/locales/types";
 
-export function SplitTool({ tool }: { tool: ToolDef }) {
+export function SplitTool({ tool }: { tool: ToolPage }) {
+  const messages = useMessages();
+  const m = messages.split;
   const [file, setFile] = useState<File | null>(null);
   const [mode, setMode] = useState<SplitMode>("each");
   const [ranges, setRanges] = useState("");
@@ -32,9 +37,9 @@ export function SplitTool({ tool }: { tool: ToolDef }) {
       parseRanges(ranges, pdf.pageCount);
       return null;
     } catch (err) {
-      return (err as Error).message;
+      return errorMessage(messages, toPdfError(err));
     }
-  }, [mode, ranges, pdf.pageCount]);
+  }, [mode, ranges, pdf.pageCount, messages]);
 
   const reset = () => {
     setFile(null);
@@ -51,7 +56,7 @@ export function SplitTool({ tool }: { tool: ToolDef }) {
         const width = String(pdf.pageCount).length;
         return parts.map((p) => ({ name: splitPartName(file.name, p.label, width), blob: bytesToBlob(p.bytes, "application/pdf") }));
       },
-      { tool: tool.slug, files: 1, pages: pdf.pageCount, output: "pdfs" },
+      { tool: tool.id, files: 1, pages: pdf.pageCount, output: "pdfs" },
     );
   }
 
@@ -71,18 +76,18 @@ export function SplitTool({ tool }: { tool: ToolDef }) {
 
       <div className="flex flex-wrap items-end gap-4 rounded-xl border bg-card p-4">
         <Segmented<SplitMode>
-          label="Split by"
+          label={m.splitBy}
           value={mode}
           onChange={setMode}
           disabled={runner.busy}
           options={[
-            { value: "each", label: "Every page", hint: "One PDF per page" },
-            { value: "ranges", label: "Page ranges", hint: "Pick pages" },
+            { value: "each", label: m.everyPage, hint: m.everyPageHint },
+            { value: "ranges", label: m.pageRanges, hint: m.pageRangesHint },
           ]}
         />
         {mode === "ranges" && (
           <label className="flex min-w-0 flex-1 flex-col gap-1.5 text-xs font-medium text-muted-foreground">
-            Pages (example: 1-3, 5, 8-)
+            {m.pagesLabel}
             <input
               type="text"
               inputMode="numeric"
@@ -108,7 +113,7 @@ export function SplitTool({ tool }: { tool: ToolDef }) {
         disabled={!ready}
         busy={runner.busy}
         progress={runner.progress}
-        hint={mode === "each" && pdf.pageCount ? `Makes ${pdf.pageCount} file${pdf.pageCount === 1 ? "" : "s"}` : undefined}
+        hint={mode === "each" && pdf.pageCount ? plural(m.makes, pdf.pageCount) : undefined}
       />
     </div>
   );

@@ -1,4 +1,4 @@
-export function HowItWorks({ steps, title = "How it works" }: { steps: readonly string[]; title?: string }) {
+export function HowItWorks({ steps, title }: { steps: readonly string[]; title: string }) {
   return (
     <section aria-labelledby="how-heading">
       <h2 id="how-heading" className="text-2xl font-bold">

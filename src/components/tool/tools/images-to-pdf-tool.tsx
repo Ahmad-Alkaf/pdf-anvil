@@ -12,12 +12,16 @@ import { useToolRunner } from "@/hooks/use-tool-runner";
 import { imagesToPdf, type OrientationOption, type PageSizeOption } from "@/lib/pdf/images-to-pdf";
 import { bytesToBlob } from "@/lib/download";
 import { combinedName } from "@/lib/names";
-import type { ToolDef } from "@/lib/tools";
+import { useMessages } from "@/locales/context";
+import { format, plural } from "@/locales/format";
+import type { ToolPage } from "@/locales/types";
 
 let seq = 0;
 const nextId = () => `i${Date.now().toString(36)}-${seq++}`;
 
-export function ImagesToPdfTool({ tool }: { tool: ToolDef }) {
+export function ImagesToPdfTool({ tool }: { tool: ToolPage }) {
+  const messages = useMessages();
+  const m = messages.imagesToPdf;
   const [items, setItems] = useState<FileItem[]>([]);
   const [pageSize, setPageSize] = useState<PageSizeOption>(tool.defaults?.pageSize ?? "a4");
   const [orientation, setOrientation] = useState<OrientationOption>("auto");
@@ -78,7 +82,7 @@ export function ImagesToPdfTool({ tool }: { tool: ToolDef }) {
         );
         return [{ name: combinedName(items.map((i) => i.file.name)), blob: bytesToBlob(out, "application/pdf") }];
       },
-      { tool: tool.slug, files: items.length, pages: items.length, output: "pdf" },
+      { tool: tool.id, files: items.length, pages: items.length, output: "pdf" },
     );
   }
 
@@ -93,38 +97,38 @@ export function ImagesToPdfTool({ tool }: { tool: ToolDef }) {
       <SizeWarning bytes={totalBytes} />
       <div className="flex flex-wrap gap-4 rounded-xl border bg-card p-4">
         <Segmented<PageSizeOption>
-          label="Page size"
+          label={m.pageSize}
           value={pageSize}
           onChange={setPageSize}
           disabled={runner.busy}
           options={[
-            { value: "a4", label: "A4" },
-            { value: "letter", label: "Letter" },
-            { value: "fit", label: "Fit to image", hint: "Page = image size, no margins" },
+            { value: "a4", label: m.a4 },
+            { value: "letter", label: m.letter },
+            { value: "fit", label: m.fit, hint: m.fitHint },
           ]}
         />
         {pageSize !== "fit" && (
           <>
             <Segmented<OrientationOption>
-              label="Orientation"
+              label={m.orientation}
               value={orientation}
               onChange={setOrientation}
               disabled={runner.busy}
               options={[
-                { value: "auto", label: "Auto" },
-                { value: "portrait", label: "Portrait" },
-                { value: "landscape", label: "Landscape" },
+                { value: "auto", label: m.auto },
+                { value: "portrait", label: m.portrait },
+                { value: "landscape", label: m.landscape },
               ]}
             />
             <Segmented<number>
-              label="Margin"
+              label={m.margin}
               value={margin}
               onChange={setMargin}
               disabled={runner.busy}
               options={[
-                { value: 0, label: "None" },
-                { value: 36, label: "Small" },
-                { value: 72, label: "Large" },
+                { value: 0, label: m.none },
+                { value: 36, label: m.small },
+                { value: 72, label: m.large },
               ]}
             />
           </>
@@ -137,7 +141,7 @@ export function ImagesToPdfTool({ tool }: { tool: ToolDef }) {
         multiple
         onFiles={addFiles}
         compact
-        label="Add more images"
+        label={m.addMore}
         disabled={runner.busy}
         capture={tool.capture}
       />
@@ -150,7 +154,10 @@ export function ImagesToPdfTool({ tool }: { tool: ToolDef }) {
         disabled={items.length === 0}
         busy={runner.busy}
         progress={runner.progress}
-        hint={`${items.length} image${items.length === 1 ? "" : "s"} · ${items.length} page${items.length === 1 ? "" : "s"}`}
+        hint={format(m.summary, {
+          images: plural(messages.common.imageCount, items.length),
+          pages: plural(messages.common.pageCount, items.length),
+        })}
       />
     </div>
   );

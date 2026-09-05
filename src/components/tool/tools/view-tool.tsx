@@ -11,7 +11,9 @@ import { usePdfDocument } from "@/hooks/use-pdf-document";
 import { track } from "@/lib/analytics";
 import { getPageSize, readPageSizes, renderPageToCanvas, type PageSize } from "@/lib/pdf/render-page";
 import type { PDFDocumentProxy } from "@/lib/pdf/pdfjs";
-import type { ToolDef } from "@/lib/tools";
+import { useMessages } from "@/locales/context";
+import { format } from "@/locales/format";
+import type { ToolPage } from "@/locales/types";
 import { cn } from "@/lib/utils";
 
 const ZOOM_STEP = 1.25;
@@ -35,7 +37,9 @@ const clamp = (n: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, n
  * browser's own PDF viewer prints it. That keeps text sharp and needs no
  * print stylesheet for lazily rendered canvases.
  */
-export function ViewTool({ tool }: { tool: ToolDef }) {
+export function ViewTool({ tool }: { tool: ToolPage }) {
+  const messages = useMessages();
+  const m = messages.view;
   const [file, setFile] = useState<File | null>(null);
   const pdf = usePdfDocument(file);
   const [sizes, setSizes] = useState<PageSize[]>([]);
@@ -78,7 +82,7 @@ export function ViewTool({ tool }: { tool: ToolDef }) {
       const first = await getPageSize(doc, 1);
       if (ac.signal.aborted) return;
       setSizes(Array.from({ length: doc.numPages }, () => first));
-      track("tool_run", { tool: tool.slug, files: 1, pages: doc.numPages, output: "none" });
+      track("tool_run", { tool: tool.id, files: 1, pages: doc.numPages, output: "none" });
       if (doc.numPages === 1) return;
       const all = await readPageSizes(doc, ac.signal);
       if (!ac.signal.aborted) setSizes(all);
@@ -86,7 +90,7 @@ export function ViewTool({ tool }: { tool: ToolDef }) {
       // aborted or document closed
     });
     return () => ac.abort();
-  }, [pdf.doc, tool.slug]);
+  }, [pdf.doc, tool.id]);
 
   // Width of the scroll area, for fit-width.
   useEffect(() => {
@@ -186,10 +190,10 @@ export function ViewTool({ tool }: { tool: ToolDef }) {
     const win = window.open(printUrl.current, "_blank");
     if (win) {
       win.opener = null;
-      setPrintNote("The PDF opened in a new tab. Press Ctrl+P (Cmd+P on a Mac) there to print it.");
-      track("tool_print", { tool: tool.slug, pages: pageCount });
+      setPrintNote(m.printed);
+      track("tool_print", { tool: tool.id, pages: pageCount });
     } else {
-      setPrintNote("Your browser blocked the new tab. Allow pop-ups for this site and click Print again.");
+      setPrintNote(m.blocked);
     }
   };
 
@@ -206,13 +210,13 @@ export function ViewTool({ tool }: { tool: ToolDef }) {
 
       {!pdf.error && (
         <>
-          <div role="toolbar" aria-label="Viewer controls" className="flex flex-wrap items-center gap-2 rounded-xl border bg-card p-2">
+          <div role="toolbar" aria-label={m.controls} className="flex flex-wrap items-center gap-2 rounded-xl border bg-card p-2">
             <div className="flex items-center gap-1">
-              <Button variant="ghost" size="icon" aria-label="Previous page" onClick={() => goTo(current - 1)} disabled={!ready || current <= 1}>
-                <ChevronLeft className="size-4" aria-hidden="true" />
+              <Button variant="ghost" size="icon" aria-label={m.prev} onClick={() => goTo(current - 1)} disabled={!ready || current <= 1}>
+                <ChevronLeft className="size-4 rtl:-scale-x-100" aria-hidden="true" />
               </Button>
               <label className="flex items-center gap-1 text-sm">
-                <span className="sr-only">Page</span>
+                <span className="sr-only">{m.page}</span>
                 <input
                   type="number"
                   inputMode="numeric"
@@ -228,23 +232,23 @@ export function ViewTool({ tool }: { tool: ToolDef }) {
                     }
                   }}
                   disabled={!ready}
-                  aria-label="Current page"
+                  aria-label={m.currentPage}
                   className="h-8 w-14 rounded-md border bg-background px-2 text-center text-sm tabular-nums focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                 />
                 <span className="text-muted-foreground tabular-nums" aria-live="polite">
                   / {pdf.pageCount || "–"}
                 </span>
               </label>
-              <Button variant="ghost" size="icon" aria-label="Next page" onClick={() => goTo(current + 1)} disabled={!ready || current >= pageCount}>
-                <ChevronRight className="size-4" aria-hidden="true" />
+              <Button variant="ghost" size="icon" aria-label={m.next} onClick={() => goTo(current + 1)} disabled={!ready || current >= pageCount}>
+                <ChevronRight className="size-4 rtl:-scale-x-100" aria-hidden="true" />
               </Button>
             </div>
 
-            <div className="ml-auto flex items-center gap-1">
+            <div className="ms-auto flex items-center gap-1">
               <Button
                 variant="ghost"
                 size="icon"
-                aria-label="Zoom out"
+                aria-label={m.zoomOut}
                 onClick={() => zoomTo({ mode: "custom", scale: clamp(scale / ZOOM_STEP, MIN_SCALE, MAX_SCALE) })}
                 disabled={!ready || scale <= MIN_SCALE}
               >
@@ -256,7 +260,7 @@ export function ViewTool({ tool }: { tool: ToolDef }) {
               <Button
                 variant="ghost"
                 size="icon"
-                aria-label="Zoom in"
+                aria-label={m.zoomIn}
                 onClick={() => zoomTo({ mode: "custom", scale: clamp(scale * ZOOM_STEP, MIN_SCALE, MAX_SCALE) })}
                 disabled={!ready || scale >= MAX_SCALE}
               >
@@ -270,7 +274,7 @@ export function ViewTool({ tool }: { tool: ToolDef }) {
                 disabled={!ready}
               >
                 <MoveHorizontal className="size-4" aria-hidden="true" />
-                Fit width
+                {m.fitWidth}
               </Button>
             </div>
 
@@ -290,7 +294,7 @@ export function ViewTool({ tool }: { tool: ToolDef }) {
             ref={setContainer}
             onScroll={onScroll}
             tabIndex={0}
-            aria-label="Document pages"
+            aria-label={m.pages}
             className="relative h-[70vh] min-h-96 overflow-auto rounded-xl border bg-muted/60 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
           >
             {ready && doc ? (
@@ -311,7 +315,7 @@ export function ViewTool({ tool }: { tool: ToolDef }) {
                 ))}
               </div>
             ) : (
-              <p className="p-6 text-center text-sm text-muted-foreground">{pdf.loading ? "Opening the file…" : ""}</p>
+              <p className="p-6 text-center text-sm text-muted-foreground">{pdf.loading ? messages.common.opening : ""}</p>
             )}
           </div>
         </>
@@ -332,6 +336,7 @@ interface PageViewProps {
 
 /** One page. Renders when near the viewport, releases its bitmap when far away. */
 function PageView({ doc, pageNumber, width, height, scale, root, elRef }: PageViewProps) {
+  const messages = useMessages();
   const wrapRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [visible, setVisible] = useState(false);
@@ -383,7 +388,7 @@ function PageView({ doc, pageNumber, width, height, scale, root, elRef }: PageVi
       <canvas
         ref={canvasRef}
         role="img"
-        aria-label={`Page ${pageNumber}`}
+        aria-label={format(messages.common.pageAlt, { page: pageNumber })}
         className={cn("block", !ready && "invisible")}
         style={{ width, height }}
       />

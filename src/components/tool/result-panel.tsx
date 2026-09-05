@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { downloadBlob, zipFiles } from "@/lib/download";
 import { formatBytes } from "@/lib/files";
 import type { ResultItem } from "@/hooks/use-tool-runner";
+import { useMessages } from "@/locales/context";
+import { format, plural } from "@/locales/format";
 
 interface Props {
   results: ResultItem[];
@@ -20,6 +22,8 @@ interface Props {
 type AutoState = "pending" | "started" | "failed";
 
 export function ResultPanel({ results, zipName, onStartOver, note, previews, stats }: Props) {
+  const messages = useMessages();
+  const m = messages.toolShell.result;
   const [zipping, setZipping] = useState(false);
   const [auto, setAuto] = useState<AutoState>("pending");
   // The ZIP is built once and reused when the user clicks "Download all" again.
@@ -63,23 +67,17 @@ export function ResultPanel({ results, zipName, onStartOver, note, previews, sta
   }, [results]);
 
   const autoText =
-    auto === "pending"
-      ? single
-        ? "Starting the download..."
-        : "Packing the files into a ZIP..."
-      : auto === "started"
-        ? "The download started. If your browser did not save the file, click Download again."
-        : "The download did not start. Click Download to save the file.";
+    auto === "pending" ? (single ? m.starting : m.packing) : auto === "started" ? m.started : m.failed;
 
   return (
     <section aria-labelledby="result-heading" className="animate-fade-in-up rounded-2xl border bg-card p-5 sm:p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 id="result-heading" className="flex items-center gap-2 text-xl font-bold">
           <CheckCircle2 className="size-6 text-success" aria-hidden="true" />
-          Done
+          {m.done}
         </h2>
         <span className="text-sm text-muted-foreground">
-          {results.length} file{single ? "" : "s"} · {formatBytes(total)}
+          {plural(messages.common.fileCount, results.length)} · {formatBytes(total)}
         </span>
       </div>
 
@@ -112,10 +110,10 @@ export function ResultPanel({ results, zipName, onStartOver, note, previews, sta
           ) : (
             <FolderArchive className="size-4" aria-hidden="true" />
           )}
-          {auto === "started" ? (single ? "Download again" : "Download ZIP again") : single ? "Download" : "Download all (.zip)"}
+          {auto === "started" ? (single ? m.downloadAgain : m.downloadZipAgain) : single ? m.download : m.downloadAll}
         </Button>
         <Button variant="outline" size="lg" onClick={onStartOver}>
-          Start over
+          {messages.common.startOver}
         </Button>
       </div>
 
@@ -128,14 +126,14 @@ export function ResultPanel({ results, zipName, onStartOver, note, previews, sta
                 <img src={r.url} alt="" className="size-12 shrink-0 rounded object-cover" />
               ) : (
                 <span className="flex size-12 shrink-0 items-center justify-center rounded bg-accent text-xs font-bold text-accent-foreground">
-                  PDF
+                  {m.pdfBadge}
                 </span>
               )}
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-sm font-medium">{r.name}</span>
                 <span className="block text-xs text-muted-foreground">{formatBytes(r.size)}</span>
               </span>
-              <Button variant="ghost" size="icon" aria-label={`Download ${r.name}`} onClick={() => downloadBlob(r.blob, r.name)}>
+              <Button variant="ghost" size="icon" aria-label={format(m.downloadFile, { name: r.name })} onClick={() => downloadBlob(r.blob, r.name)}>
                 <Download className="size-4" />
               </Button>
             </li>

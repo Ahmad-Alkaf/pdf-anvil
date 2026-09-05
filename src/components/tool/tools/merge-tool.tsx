@@ -15,7 +15,9 @@ import { toPdfError } from "@/lib/pdf/errors";
 import { bytesToBlob } from "@/lib/download";
 import { looksLikePdf } from "@/lib/files";
 import { combinedName } from "@/lib/names";
-import type { ToolDef } from "@/lib/tools";
+import { useMessages } from "@/locales/context";
+import { errorMessage, format, plural } from "@/locales/format";
+import type { ToolPage } from "@/locales/types";
 
 interface MergeItem extends FileItem {
   pages?: number;
@@ -24,7 +26,9 @@ interface MergeItem extends FileItem {
 let seq = 0;
 const nextId = () => `f${Date.now().toString(36)}-${seq++}`;
 
-export function MergeTool({ tool }: { tool: ToolDef }) {
+export function MergeTool({ tool }: { tool: ToolPage }) {
+  const messages = useMessages();
+  const m = messages.merge;
   const [items, setItems] = useState<MergeItem[]>([]);
   const runner = useToolRunner();
   const inspected = useRef(new Set<string>());
@@ -44,16 +48,16 @@ export function MergeTool({ tool }: { tool: ToolDef }) {
           await closePdf(doc);
           setItems((prev) =>
             prev.map((p) =>
-              p.id === item.id ? { ...p, pages, meta: `${pages} page${pages === 1 ? "" : "s"}`, previewUrl: preview } : p,
+              p.id === item.id ? { ...p, pages, meta: plural(messages.common.pageCount, pages), previewUrl: preview } : p,
             ),
           );
         } catch (err) {
-          const message = toPdfError(err).message;
+          const message = errorMessage(messages, toPdfError(err));
           setItems((prev) => prev.map((p) => (p.id === item.id ? { ...p, error: message } : p)));
         }
       })();
     }
-  }, [items]);
+  }, [items, messages]);
 
   const addFiles = useCallback(
     (files: File[]) => {
@@ -81,7 +85,7 @@ export function MergeTool({ tool }: { tool: ToolDef }) {
         const out = await mergePdfs(inputs, onProgress);
         return [{ name: combinedName(items.map((i) => i.file.name)), blob: bytesToBlob(out, "application/pdf") }];
       },
-      { tool: tool.slug, files: items.length, pages: totalPages, output: "pdf" },
+      { tool: tool.id, files: items.length, pages: totalPages, output: "pdf" },
     );
   }
 
@@ -97,7 +101,7 @@ export function MergeTool({ tool }: { tool: ToolDef }) {
         <>
           <SizeWarning bytes={totalBytes} />
           <FileList items={items} onReorder={setItems} onRemove={remove} disabled={runner.busy} />
-          <Dropzone accept={tool.accept} multiple onFiles={addFiles} compact label="Add more PDFs" disabled={runner.busy} />
+          <Dropzone accept={tool.accept} multiple onFiles={addFiles} compact label={m.addMore} disabled={runner.busy} />
           {runner.error && <ErrorBanner message={runner.error} onDismiss={runner.reset} />}
           <ActionBar
             label={tool.actionLabel}
@@ -108,8 +112,8 @@ export function MergeTool({ tool }: { tool: ToolDef }) {
             progress={runner.progress}
             hint={
               items.length < 2
-                ? "Add at least two PDFs."
-                : `${items.length} files · ${totalPages} pages`
+                ? m.atLeastTwo
+                : format(m.summary, { files: items.length, pages: totalPages })
             }
           />
         </>

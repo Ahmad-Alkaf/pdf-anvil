@@ -4,7 +4,7 @@ import { ChevronDown } from "lucide-react";
 import { useId, useState } from "react";
 import type { ToolFaq } from "@/lib/tools";
 
-export function Faq({ items, title = "Frequently asked questions" }: { items: readonly ToolFaq[]; title?: string }) {
+export function Faq({ items, title }: { items: readonly ToolFaq[]; title: string }) {
   const [openQuestions, setOpenQuestions] = useState<Set<number>>(new Set());
   const idPrefix = useId();
 
@@ -34,12 +34,12 @@ export function Faq({ items, title = "Frequently asked questions" }: { items: re
             <div key={item.q} className="px-5 py-1">
               <button
                 type="button"
-                className="flex w-full cursor-pointer items-center justify-between gap-4 rounded-md py-3 text-left font-semibold transition-colors hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2"
+                className="flex w-full cursor-pointer items-center justify-between gap-4 rounded-md py-3 text-start font-semibold transition-colors hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2"
                 aria-expanded={isOpen}
                 aria-controls={answerId}
                 onClick={() => toggleQuestion(index)}
               >
-              <span>{item.q}</span>
+                <span>{item.q}</span>
                 <ChevronDown
                   className={`size-5 shrink-0 text-muted-foreground transition-transform duration-300 motion-reduce:transition-none ${isOpen ? "rotate-180" : "rotate-0"}`}
                   aria-hidden="true"

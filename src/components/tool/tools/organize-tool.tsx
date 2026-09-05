@@ -16,11 +16,15 @@ import { organizePdf } from "@/lib/pdf/organize";
 import type { RotationDelta } from "@/lib/pdf/rotate";
 import { bytesToBlob } from "@/lib/download";
 import { outputName } from "@/lib/names";
-import type { ToolDef } from "@/lib/tools";
+import { useMessages } from "@/locales/context";
+import { format, plural } from "@/locales/format";
+import type { ToolPage } from "@/locales/types";
 
 const norm = (deg: number): RotationDelta => ((((deg % 360) + 360) % 360) as RotationDelta);
 
-export function OrganizeTool({ tool }: { tool: ToolDef }) {
+export function OrganizeTool({ tool }: { tool: ToolPage }) {
+  const messages = useMessages();
+  const m = messages.organize;
   const [file, setFile] = useState<File | null>(null);
   const [order, setOrder] = useState<number[]>([]);
   const [rotations, setRotations] = useState<Record<number, RotationDelta>>({});
@@ -80,7 +84,7 @@ export function OrganizeTool({ tool }: { tool: ToolDef }) {
         const out = await organizePdf(bytes, { order, rotations });
         return [{ name: outputName(file.name), blob: bytesToBlob(out, "application/pdf") }];
       },
-      { tool: tool.slug, files: 1, pages: order.length, output: "pdf" },
+      { tool: tool.id, files: 1, pages: order.length, output: "pdf" },
     );
   }
 
@@ -95,11 +99,11 @@ export function OrganizeTool({ tool }: { tool: ToolDef }) {
       <FileHeader file={file} pageCount={pdf.pageCount} loading={pdf.loading} onRemove={reset}>
         <span className="flex items-center gap-1">
           <Button variant="outline" size="sm" onClick={undo} disabled={history.length === 0 || runner.busy}>
-            <Undo2 className="size-4" aria-hidden="true" /> Undo
+            <Undo2 className="size-4 rtl:-scale-x-100" aria-hidden="true" /> {messages.common.undo}
           </Button>
           {changed && (
             <Button variant="ghost" size="sm" onClick={resetEdits} disabled={runner.busy}>
-              Reset
+              {messages.common.reset}
             </Button>
           )}
         </span>
@@ -107,8 +111,8 @@ export function OrganizeTool({ tool }: { tool: ToolDef }) {
       <SizeWarning bytes={file.size} />
       {pdf.error && <ErrorBanner message={pdf.error} />}
       <p className="text-sm text-muted-foreground">
-        Drag pages to reorder. Hover a page to rotate or delete it.
-        {deletedCount > 0 && ` ${deletedCount} page${deletedCount === 1 ? "" : "s"} will be removed.`}
+        {m.hint}
+        {deletedCount > 0 && ` ${plural(m.willRemove, deletedCount)}`}
       </p>
 
       {pdf.doc && order.length > 0 && (
@@ -132,7 +136,7 @@ export function OrganizeTool({ tool }: { tool: ToolDef }) {
         disabled={!pdf.doc || !changed || order.length === 0}
         busy={runner.busy}
         progress={runner.progress}
-        hint={!changed ? "Move, rotate, or delete a page to continue." : `${order.length} pages in the output`}
+        hint={!changed ? m.moveHint : format(m.output, { n: order.length })}
       />
     </div>
   );

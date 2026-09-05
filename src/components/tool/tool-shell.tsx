@@ -1,9 +1,9 @@
 "use client";
 
 import { TOOL_COMPONENTS } from "./tool-registry.client";
-import type { ToolDef } from "@/lib/tools";
+import type { ToolPage } from "@/locales/types";
 
-export function ToolShell({ tool }: { tool: ToolDef }) {
+export function ToolShell({ tool }: { tool: ToolPage }) {
   const Tool = TOOL_COMPONENTS[tool.kind];
   return (
     <section aria-label={tool.name} className="mx-auto w-full max-w-5xl">

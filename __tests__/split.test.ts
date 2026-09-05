@@ -51,7 +51,7 @@ describe("splitPdf", () => {
     const onProgress = vi.fn();
     await splitPdf(await threePages(), { mode: "each" }, onProgress);
     expect(onProgress).toHaveBeenCalledTimes(4);
-    expect(onProgress).toHaveBeenNthCalledWith(1, 0, 3, "Writing page-1");
+    expect(onProgress).toHaveBeenNthCalledWith(1, 0, 3, { key: "writing", label: "page-1" });
     expect(onProgress).toHaveBeenLastCalledWith(3, 3);
   });
 });

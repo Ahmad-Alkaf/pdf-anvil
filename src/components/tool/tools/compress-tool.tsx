@@ -14,29 +14,23 @@ import { bytesToBlob } from "@/lib/download";
 import { formatBytes } from "@/lib/files";
 import { outputName } from "@/lib/names";
 import { cn } from "@/lib/utils";
-import type { ToolDef } from "@/lib/tools";
+import { useMessages } from "@/locales/context";
+import { plural } from "@/locales/format";
+import type { Messages, ToolPage } from "@/locales/types";
 
-const LEVEL_OPTIONS: { value: CompressLevel; label: string; hint: string }[] = [
-  {
-    value: "lossless",
-    label: "Lossless",
-    hint: "Cleans the file structure and removes unused data. Every image stays exactly as it is.",
-  },
-  {
-    value: "balanced",
-    label: "Balanced (recommended)",
-    hint: "Large photos are limited to 1600 px and saved as JPEG at 75% quality. Sharp on screen and in print.",
-  },
-  {
-    value: "small",
-    label: "Smallest",
-    hint: "Large photos are limited to 1100 px and saved as JPEG at 60% quality. Best for email and upload limits.",
-  },
-];
+function levelOptions(m: Messages["compress"]): { value: CompressLevel; label: string; hint: string }[] {
+  return [
+    { value: "lossless", label: m.lossless, hint: m.losslessHint },
+    { value: "balanced", label: m.balanced, hint: m.balancedHint },
+    { value: "small", label: m.smallest, hint: m.smallestHint },
+  ];
+}
 
 type Summary = Pick<CompressResult, "before" | "after" | "imagesProcessed" | "imagesFound">;
 
-export function CompressTool({ tool }: { tool: ToolDef }) {
+export function CompressTool({ tool }: { tool: ToolPage }) {
+  const m = useMessages().compress;
+  const LEVEL_OPTIONS = levelOptions(m);
   const [file, setFile] = useState<File | null>(null);
   const [level, setLevel] = useState<CompressLevel>("balanced");
   const [summary, setSummary] = useState<Summary | null>(null);
@@ -60,7 +54,7 @@ export function CompressTool({ tool }: { tool: ToolDef }) {
         setSummary({ ...result, after: out.length });
         return [{ name: outputName(file.name), blob: bytesToBlob(out, "application/pdf") }];
       },
-      { tool: tool.slug, files: 1, pages: pdf.pageCount, output: "pdf" },
+      { tool: tool.id, files: 1, pages: pdf.pageCount, output: "pdf" },
     );
   }
 
@@ -71,21 +65,21 @@ export function CompressTool({ tool }: { tool: ToolDef }) {
     const pct = `${Math.round(saved * 100)}%`;
     const note =
       summary.after >= summary.before
-        ? "The file was already compact. It has no large images to re-encode, or they are already small. The original file was kept."
+        ? m.noteCompact
         : level === "lossless"
-          ? "Images were not changed. Only the file structure was cleaned."
+          ? m.noteLossless
           : summary.imagesProcessed > 0
-            ? `${summary.imagesProcessed} image${summary.imagesProcessed === 1 ? "" : "s"} re-encoded. Text and vector graphics were not changed.`
-            : "No image was large enough to re-encode. Only the file structure was cleaned.";
+            ? plural(m.noteReencoded, summary.imagesProcessed)
+            : m.noteNone;
     return (
       <ResultPanel
         results={runner.results}
         zipName="compressed.zip"
         onStartOver={reset}
         stats={[
-          { label: "Before", value: formatBytes(summary.before) },
-          { label: "After", value: formatBytes(summary.after) },
-          { label: "Saved", value: pct },
+          { label: m.before, value: formatBytes(summary.before) },
+          { label: m.after, value: formatBytes(summary.after) },
+          { label: m.saved, value: pct },
         ]}
         note={note}
       />
@@ -99,7 +93,7 @@ export function CompressTool({ tool }: { tool: ToolDef }) {
       {pdf.error && <ErrorBanner message={pdf.error} />}
 
       <fieldset className="rounded-xl border bg-card p-4" disabled={runner.busy}>
-        <legend className="px-1 text-xs font-medium text-muted-foreground">Compression level</legend>
+        <legend className="px-1 text-xs font-medium text-muted-foreground">{m.level}</legend>
         <div role="radiogroup" className="grid gap-2 sm:grid-cols-3">
           {LEVEL_OPTIONS.map((opt) => {
             const active = opt.value === level;
@@ -111,7 +105,7 @@ export function CompressTool({ tool }: { tool: ToolDef }) {
                 aria-checked={active}
                 onClick={() => setLevel(opt.value)}
                 className={cn(
-                  "rounded-lg border p-3 text-left transition-colors",
+                  "rounded-lg border p-3 text-start transition-colors",
                   "focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
                   active ? "border-primary bg-primary/5 ring-1 ring-primary" : "hover:bg-muted/50",
                   runner.busy && "opacity-60",

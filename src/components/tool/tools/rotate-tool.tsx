@@ -15,11 +15,14 @@ import { useToolRunner } from "@/hooks/use-tool-runner";
 import { rotatePdf, type RotationDelta } from "@/lib/pdf/rotate";
 import { bytesToBlob } from "@/lib/download";
 import { outputName } from "@/lib/names";
-import type { ToolDef } from "@/lib/tools";
+import { useMessages } from "@/locales/context";
+import type { ToolPage } from "@/locales/types";
 
 const norm = (deg: number): RotationDelta => ((((deg % 360) + 360) % 360) as RotationDelta);
 
-export function RotateTool({ tool }: { tool: ToolDef }) {
+export function RotateTool({ tool }: { tool: ToolPage }) {
+  const messages = useMessages();
+  const m = messages.rotate;
   const [file, setFile] = useState<File | null>(null);
   const [rotations, setRotations] = useState<Record<number, RotationDelta>>({});
   const pdf = usePdfDocument(file);
@@ -52,7 +55,7 @@ export function RotateTool({ tool }: { tool: ToolDef }) {
         const out = await rotatePdf(bytes, { deltas: rotations });
         return [{ name: outputName(file.name), blob: bytesToBlob(out, "application/pdf") }];
       },
-      { tool: tool.slug, files: 1, pages: pdf.pageCount, output: "pdf" },
+      { tool: tool.id, files: 1, pages: pdf.pageCount, output: "pdf" },
     );
   }
 
@@ -67,21 +70,21 @@ export function RotateTool({ tool }: { tool: ToolDef }) {
       <FileHeader file={file} pageCount={pdf.pageCount} loading={pdf.loading} onRemove={reset}>
         <span className="flex items-center gap-1">
           <Button variant="outline" size="sm" onClick={() => rotateAll(-90)} disabled={!pdf.doc || runner.busy}>
-            <RotateCcw className="size-4" aria-hidden="true" /> All left
+            <RotateCcw className="size-4" aria-hidden="true" /> {m.allLeft}
           </Button>
           <Button variant="outline" size="sm" onClick={() => rotateAll(90)} disabled={!pdf.doc || runner.busy}>
-            <RotateCw className="size-4" aria-hidden="true" /> All right
+            <RotateCw className="size-4" aria-hidden="true" /> {m.allRight}
           </Button>
           {changed && (
             <Button variant="ghost" size="sm" onClick={() => setRotations({})} disabled={runner.busy}>
-              Reset
+              {messages.common.reset}
             </Button>
           )}
         </span>
       </FileHeader>
       <SizeWarning bytes={file.size} />
       {pdf.error && <ErrorBanner message={pdf.error} />}
-      <p className="text-sm text-muted-foreground">Hover a page to rotate only that page.</p>
+      <p className="text-sm text-muted-foreground">{m.hint}</p>
 
       {pdf.doc && (
         <PageGrid doc={pdf.doc} order={order} rotations={rotations} onRotate={rotateOne} disabled={runner.busy} />
@@ -95,7 +98,7 @@ export function RotateTool({ tool }: { tool: ToolDef }) {
         disabled={!pdf.doc || !changed}
         busy={runner.busy}
         progress={runner.progress}
-        hint={!changed ? "Rotate at least one page." : undefined}
+        hint={!changed ? m.rotateOne : undefined}
       />
     </div>
   );

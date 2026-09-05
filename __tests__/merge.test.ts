@@ -41,9 +41,9 @@ describe("mergePdfs", () => {
     const onProgress = vi.fn();
     await mergePdfs([a, b], onProgress);
     expect(onProgress.mock.calls).toEqual([
-      [0, 2, "Reading file 1 of 2"],
-      [1, 2, "Reading file 2 of 2"],
-      [2, 2, "Saving"],
+      [0, 2, { key: "reading-file", index: 1, total: 2 }],
+      [1, 2, { key: "reading-file", index: 2, total: 2 }],
+      [2, 2, { key: "saving" }],
     ]);
   });
 

@@ -1,7 +1,7 @@
 import { PageSizes, type PDFImage } from "pdf-lib";
 import { createPdf, saveStamped } from "./load";
 import { PdfError } from "./errors";
-import type { Progress } from "./merge";
+import type { Progress } from "./progress";
 
 export type PageSizeOption = "fit" | "a4" | "letter";
 export type OrientationOption = "auto" | "portrait" | "landscape";
@@ -45,7 +45,7 @@ export async function imagesToPdf(
 
   for (let i = 0; i < files.length; i++) {
     const file = files[i];
-    onProgress?.(i, files.length, `Adding ${file.name}`);
+    onProgress?.(i, files.length, { key: "adding", name: file.name });
     let image: PDFImage;
     try {
       const k = kind(file);
@@ -83,6 +83,6 @@ export async function imagesToPdf(
     page.drawImage(image, { x: (pw - w) / 2, y: (ph - h) / 2, width: w, height: h });
   }
 
-  onProgress?.(files.length, files.length, "Saving");
+  onProgress?.(files.length, files.length, { key: "saving" });
   return saveStamped(doc);
 }

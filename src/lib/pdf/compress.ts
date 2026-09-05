@@ -11,7 +11,7 @@ import {
   PDFStream,
 } from "pdf-lib";
 import { loadPdf, saveStamped } from "./load";
-import type { Progress } from "./merge";
+import type { Progress } from "./progress";
 
 export type CompressLevel = "lossless" | "balanced" | "small";
 
@@ -384,7 +384,7 @@ export async function compressPdf(
   onProgress?: Progress,
 ): Promise<CompressResult> {
   const before = bytes.length;
-  onProgress?.(0, 1, "Reading");
+  onProgress?.(0, 1, { key: "reading" });
   const doc = await loadPdf(bytes);
 
   stripMetadata(doc);
@@ -401,7 +401,7 @@ export async function compressPdf(
 
     for (let i = 0; i < candidates.length; i++) {
       const candidate = candidates[i];
-      onProgress?.(i, candidates.length + 1, `Image ${i + 1} of ${candidates.length}`);
+      onProgress?.(i, candidates.length + 1, { key: "image", index: i + 1, total: candidates.length });
       try {
         const stream = doc.context.lookup(candidate.ref, PDFStream);
         if (!(stream instanceof PDFRawStream)) continue;
@@ -418,7 +418,7 @@ export async function compressPdf(
     }
   }
 
-  onProgress?.(imagesFound, imagesFound + 1, "Saving");
+  onProgress?.(imagesFound, imagesFound + 1, { key: "saving" });
   const out = await saveStamped(doc);
   onProgress?.(imagesFound + 1, imagesFound + 1);
   return { bytes: out, before, after: out.length, imagesProcessed, imagesFound };

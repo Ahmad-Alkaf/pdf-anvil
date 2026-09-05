@@ -2,6 +2,7 @@
 
 import { useId, useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
+import { useMessages } from "@/locales/context";
 import { cn } from "@/lib/utils";
 
 interface Props {
@@ -18,9 +19,11 @@ interface Props {
 
 /** Password input with a show/hide toggle. Never stores the value anywhere. */
 export function PasswordField({ label, value, onChange, hint, placeholder, required, autoFocus, disabled, autoComplete }: Props) {
+  const m = useMessages().toolShell.password;
   const id = useId();
   const hintId = `${id}-hint`;
   const [shown, setShown] = useState(false);
+  const toggleLabel = shown ? m.hide : m.show;
   return (
     <div>
       <label htmlFor={id} className="block text-sm font-medium">
@@ -55,9 +58,9 @@ export function PasswordField({ label, value, onChange, hint, placeholder, requi
           type="button"
           onClick={() => setShown((v) => !v)}
           disabled={disabled}
-          aria-label={shown ? "Hide password" : "Show password"}
+          aria-label={toggleLabel}
           aria-pressed={shown}
-          title={shown ? "Hide password" : "Show password"}
+          title={toggleLabel}
           className="inline-flex size-10 shrink-0 items-center justify-center rounded-lg border bg-card text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none disabled:opacity-60"
         >
           {shown ? <EyeOff className="size-4" aria-hidden="true" /> : <Eye className="size-4" aria-hidden="true" />}

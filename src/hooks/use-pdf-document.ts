@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { closePdf, openPdf, type PDFDocumentProxy } from "@/lib/pdf/pdfjs";
 import { PdfError, toPdfError } from "@/lib/pdf/errors";
 import { looksLikePdf } from "@/lib/files";
+import { useMessages } from "@/locales/context";
+import { errorMessage } from "@/locales/format";
 
 export interface PdfDocumentState {
   doc: PDFDocumentProxy | null;
@@ -20,6 +22,7 @@ const EMPTY: PdfDocumentState = { doc: null, pageCount: 0, loading: false, error
  * its own copy and never shares bytes with pdf-lib.
  */
 export function usePdfDocument(file: File | null): PdfDocumentState {
+  const messages = useMessages();
   const [state, setState] = useState<PdfDocumentState>(EMPTY);
   const [trackedFile, setTrackedFile] = useState<File | null>(file);
 
@@ -47,7 +50,7 @@ export function usePdfDocument(file: File | null): PdfDocumentState {
         setState({ doc, pageCount: doc.numPages, loading: false, error: null });
       } catch (err) {
         if (cancelled) return;
-        setState({ doc: null, pageCount: 0, loading: false, error: toPdfError(err).message });
+        setState({ doc: null, pageCount: 0, loading: false, error: errorMessage(messages, toPdfError(err)) });
       }
     })();
 
@@ -55,7 +58,7 @@ export function usePdfDocument(file: File | null): PdfDocumentState {
       cancelled = true;
       if (opened) void closePdf(opened);
     };
-  }, [file]);
+  }, [file, messages]);
 
   return state;
 }

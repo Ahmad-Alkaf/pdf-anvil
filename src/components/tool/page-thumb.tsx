@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { renderThumbnail } from "@/lib/pdf/thumbnails";
 import type { PDFDocumentProxy } from "@/lib/pdf/pdfjs";
+import { useMessages } from "@/locales/context";
+import { format } from "@/locales/format";
 import { cn } from "@/lib/utils";
 
 interface Props {
@@ -14,6 +16,7 @@ interface Props {
 
 /** Lazy page thumbnail. Renders only once it scrolls near the viewport. */
 export function PageThumb({ doc, pageNumber, rotation = 0, className }: Props) {
+  const m = useMessages();
   const ref = useRef<HTMLDivElement>(null);
   const [url, setUrl] = useState<string | null>(null);
   const [visible, setVisible] = useState(false);
@@ -54,7 +57,7 @@ export function PageThumb({ doc, pageNumber, rotation = 0, className }: Props) {
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={url}
-          alt={`Page ${pageNumber}`}
+          alt={format(m.common.pageAlt, { page: pageNumber })}
           draggable={false}
           className="max-h-full max-w-full object-contain shadow-sm transition-transform duration-200"
           style={{ transform: rotation ? `rotate(${rotation}deg)` : undefined }}

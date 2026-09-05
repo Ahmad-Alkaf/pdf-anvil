@@ -19,6 +19,8 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { ArrowDown, ArrowUp, GripVertical, X } from "lucide-react";
 import { formatBytes } from "@/lib/files";
+import { useMessages } from "@/locales/context";
+import { format } from "@/locales/format";
 import { cn } from "@/lib/utils";
 
 export interface FileItem {
@@ -99,20 +101,21 @@ function Row({
     id: item.id,
     disabled,
   });
+  const m = useMessages().toolShell.fileList;
 
   return (
     <li
       ref={setNodeRef}
       style={{ transform: CSS.Transform.toString(transform), transition }}
       className={cn(
-        "flex items-center gap-2 rounded-xl border bg-card p-2 pr-1 sm:gap-3",
+        "flex items-center gap-2 rounded-xl border bg-card p-2 pe-1 sm:gap-3",
         isDragging && "relative z-10 shadow-lg ring-2 ring-primary/40",
         item.error && "border-destructive/50",
       )}
     >
       <button
         type="button"
-        aria-label={`Drag to reorder ${item.file.name}`}
+        aria-label={format(m.drag, { name: item.file.name })}
         className="cursor-grab touch-none rounded p-1 text-muted-foreground hover:bg-muted active:cursor-grabbing"
         {...attributes}
         {...listeners}
@@ -143,7 +146,7 @@ function Row({
           type="button"
           onClick={onUp}
           disabled={disabled || index === 0}
-          aria-label="Move up"
+          aria-label={m.moveUp}
           className="rounded p-1.5 text-muted-foreground hover:bg-muted disabled:opacity-30"
         >
           <ArrowUp className="size-4" />
@@ -152,7 +155,7 @@ function Row({
           type="button"
           onClick={onDown}
           disabled={disabled || index === count - 1}
-          aria-label="Move down"
+          aria-label={m.moveDown}
           className="rounded p-1.5 text-muted-foreground hover:bg-muted disabled:opacity-30"
         >
           <ArrowDown className="size-4" />
@@ -162,7 +165,7 @@ function Row({
         type="button"
         onClick={onRemove}
         disabled={disabled}
-        aria-label={`Remove ${item.file.name}`}
+        aria-label={format(m.remove, { name: item.file.name })}
         className="rounded p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
       >
         <X className="size-4" />

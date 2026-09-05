@@ -17,7 +17,9 @@ import { readPageSizes, renderPageToCanvas, type PageSize } from "@/lib/pdf/rend
 import type { PDFDocumentProxy } from "@/lib/pdf/pdfjs";
 import { bytesToBlob } from "@/lib/download";
 import { outputName } from "@/lib/names";
-import type { ToolDef } from "@/lib/tools";
+import { useMessages } from "@/locales/context";
+import { format, plural } from "@/locales/format";
+import type { Messages, ToolPage } from "@/locales/types";
 import { cn } from "@/lib/utils";
 
 /*
@@ -111,7 +113,9 @@ function isTyping(target: EventTarget | null): boolean {
   return tag === "TEXTAREA" || tag === "INPUT" || tag === "SELECT";
 }
 
-export function EditTool({ tool }: { tool: ToolDef }) {
+export function EditTool({ tool }: { tool: ToolPage }) {
+  const messages = useMessages();
+  const m = messages.edit;
   const [file, setFile] = useState<File | null>(null);
   const pdf = usePdfDocument(file);
   const runner = useToolRunner();
@@ -562,7 +566,7 @@ export function EditTool({ tool }: { tool: ToolDef }) {
         const out = await applyEdits(bytes, ops, onProgress);
         return [{ name: outputName(file.name), blob: bytesToBlob(out, "application/pdf") }];
       },
-      { tool: tool.slug, files: 1, pages: sizes.length, output: "pdf" },
+      { tool: tool.id, files: 1, pages: sizes.length, output: "pdf" },
     );
   }
 
@@ -576,7 +580,7 @@ export function EditTool({ tool }: { tool: ToolDef }) {
         results={runner.results}
         zipName="edited.zip"
         onStartOver={reset}
-        note="The new content was drawn over the pages. Text under a whiteout is covered, but it stays in the file."
+        note={m.note}
       />
     );
   }
@@ -593,14 +597,7 @@ export function EditTool({ tool }: { tool: ToolDef }) {
     setMode(m);
     if (m !== "select") setSelectedId(null);
   };
-  const hint: Record<Mode, string> = {
-    select: "Click an item to select it. Drag it to move it. Pull the corner to resize it. Press Delete to remove it.",
-    text: "Click the page where the text starts. Type, then press Escape or click outside.",
-    whiteout: "Drag over the part of the page you want to cover with white.",
-    highlight: "Drag over the text you want to highlight.",
-    image: "Choose a PNG or JPG. It is placed in the middle of the page.",
-    draw: "Draw on the page with the mouse, a pen, or your finger. Strokes drawn one after the other become one item.",
-  };
+  const hint: Record<Mode, string> = m.hints;
   const textTarget = selected?.type === "text" ? selected : null;
   const showTextControls = mode === "text" || textTarget !== null;
   const showPenControls = mode === "draw" || selected?.type === "path";
@@ -628,13 +625,13 @@ export function EditTool({ tool }: { tool: ToolDef }) {
 
       {!pdf.error && (
         <>
-          <div role="toolbar" aria-label="Editing tools" className="flex flex-wrap items-center gap-1 rounded-xl border bg-card p-2">
-            {toolButton("select", "Select", MousePointer2)}
-            {toolButton("text", "Text", Type)}
-            {toolButton("whiteout", "Whiteout", Eraser)}
-            {toolButton("highlight", "Highlight", Highlighter)}
-            {toolButton("image", "Image", ImagePlus)}
-            {toolButton("draw", "Draw", Pencil)}
+          <div role="toolbar" aria-label={m.toolbar} className="flex flex-wrap items-center gap-1 rounded-xl border bg-card p-2">
+            {toolButton("select", m.select, MousePointer2)}
+            {toolButton("text", m.text, Type)}
+            {toolButton("whiteout", m.whiteout, Eraser)}
+            {toolButton("highlight", m.highlight, Highlighter)}
+            {toolButton("image", m.image, ImagePlus)}
+            {toolButton("draw", m.draw, Pencil)}
             <input
               ref={imageInput}
               type="file"
@@ -650,9 +647,9 @@ export function EditTool({ tool }: { tool: ToolDef }) {
             />
 
             {showTextControls && (
-              <span className="flex items-center gap-1 border-l pl-2">
+              <span className="flex items-center gap-1 border-s ps-2">
                 <label className="sr-only" htmlFor="edit-font">
-                  Font
+                  {m.font}
                 </label>
                 <select
                   id="edit-font"
@@ -669,7 +666,7 @@ export function EditTool({ tool }: { tool: ToolDef }) {
                   <option value="Courier">Courier</option>
                 </select>
                 <label className="sr-only" htmlFor="edit-size">
-                  Font size
+                  {m.fontSize}
                 </label>
                 <select
                   id="edit-size"
@@ -683,12 +680,12 @@ export function EditTool({ tool }: { tool: ToolDef }) {
                 >
                   {FONT_SIZES.map((s) => (
                     <option key={s} value={s}>
-                      {s} pt
+                      {format(m.pt, { n: s })}
                     </option>
                   ))}
                 </select>
                 <label className="sr-only" htmlFor="edit-color">
-                  Text color
+                  {m.textColor}
                 </label>
                 <input
                   id="edit-color"
@@ -699,16 +696,16 @@ export function EditTool({ tool }: { tool: ToolDef }) {
                     setTextColor(color);
                     if (textTarget) patch(textTarget.id, { color });
                   }}
-                  title="Text color"
+                  title={m.textColor}
                   className="size-8 cursor-pointer rounded-md border bg-background p-0.5"
                 />
               </span>
             )}
 
             {showPenControls && (
-              <span className="flex items-center gap-1 border-l pl-2">
+              <span className="flex items-center gap-1 border-s ps-2">
                 <label className="sr-only" htmlFor="pen-width">
-                  Pen width
+                  {m.penWidth}
                 </label>
                 <select
                   id="pen-width"
@@ -722,12 +719,12 @@ export function EditTool({ tool }: { tool: ToolDef }) {
                 >
                   {PEN_WIDTHS.map((w) => (
                     <option key={w} value={w}>
-                      {w} pt
+                      {format(m.pt, { n: w })}
                     </option>
                   ))}
                 </select>
                 <label className="sr-only" htmlFor="pen-color">
-                  Pen color
+                  {m.penColor}
                 </label>
                 <input
                   id="pen-color"
@@ -738,22 +735,22 @@ export function EditTool({ tool }: { tool: ToolDef }) {
                     setPenColor(color);
                     if (selected?.type === "path") patch(selected.id, { color });
                   }}
-                  title="Pen color"
+                  title={m.penColor}
                   className="size-8 cursor-pointer rounded-md border bg-background p-0.5"
                 />
               </span>
             )}
 
-            <span className="ml-auto flex items-center gap-1">
-              <Button variant="ghost" size="icon" aria-label="Undo" title="Undo (Ctrl+Z)" onClick={undo} disabled={past.length === 0 || runner.busy}>
-                <Undo2 className="size-4" aria-hidden="true" />
+            <span className="ms-auto flex items-center gap-1">
+              <Button variant="ghost" size="icon" aria-label={messages.common.undo} title={m.undoTitle} onClick={undo} disabled={past.length === 0 || runner.busy}>
+                <Undo2 className="size-4 rtl:-scale-x-100" aria-hidden="true" />
               </Button>
-              <Button variant="ghost" size="icon" aria-label="Redo" title="Redo (Ctrl+Shift+Z)" onClick={redo} disabled={future.length === 0 || runner.busy}>
-                <Redo2 className="size-4" aria-hidden="true" />
+              <Button variant="ghost" size="icon" aria-label={m.redo} title={m.redoTitle} onClick={redo} disabled={future.length === 0 || runner.busy}>
+                <Redo2 className="size-4 rtl:-scale-x-100" aria-hidden="true" />
               </Button>
               <span className="mx-1 h-6 border-l" aria-hidden="true" />
-              <Button variant="ghost" size="icon" aria-label="Previous page" onClick={() => setCurrent((c) => Math.max(0, c - 1))} disabled={!ready || current === 0}>
-                <ChevronLeft className="size-4" aria-hidden="true" />
+              <Button variant="ghost" size="icon" aria-label={m.prev} onClick={() => setCurrent((c) => Math.max(0, c - 1))} disabled={!ready || current === 0}>
+                <ChevronLeft className="size-4 rtl:-scale-x-100" aria-hidden="true" />
               </Button>
               <span className="text-sm tabular-nums text-muted-foreground" aria-live="polite">
                 {ready ? `${current + 1} / ${sizes.length}` : "–"}
@@ -761,11 +758,11 @@ export function EditTool({ tool }: { tool: ToolDef }) {
               <Button
                 variant="ghost"
                 size="icon"
-                aria-label="Next page"
+                aria-label={m.next}
                 onClick={() => setCurrent((c) => Math.min(sizes.length - 1, c + 1))}
                 disabled={!ready || current >= sizes.length - 1}
               >
-                <ChevronRight className="size-4" aria-hidden="true" />
+                <ChevronRight className="size-4 rtl:-scale-x-100" aria-hidden="true" />
               </Button>
             </span>
           </div>
@@ -776,7 +773,7 @@ export function EditTool({ tool }: { tool: ToolDef }) {
           <div className="flex flex-col gap-3 sm:flex-row">
             {/* Page strip */}
             {doc && sizes.length > 0 && (
-              <ol className="flex shrink-0 gap-2 overflow-auto sm:max-h-[75vh] sm:w-24 sm:flex-col" aria-label="Pages">
+              <ol className="flex shrink-0 gap-2 overflow-auto sm:max-h-[75vh] sm:w-24 sm:flex-col" aria-label={m.pagesStrip}>
                 {sizes.map((_, i) => (
                   <li key={i} className="relative w-16 shrink-0 sm:w-full">
                     <button
@@ -786,7 +783,11 @@ export function EditTool({ tool }: { tool: ToolDef }) {
                         setSelectedId(null);
                         setEditingId(null);
                       }}
-                      aria-label={`Page ${i + 1}${counts[i] ? `, ${counts[i]} item${counts[i] === 1 ? "" : "s"}` : ""}`}
+                      aria-label={
+                        counts[i]
+                          ? `${format(messages.common.pageAlt, { page: i + 1 })}, ${plural(messages.common.itemCount, counts[i])}`
+                          : format(messages.common.pageAlt, { page: i + 1 })
+                      }
                       aria-current={i === current ? "page" : undefined}
                       className={cn(
                         "block w-full overflow-hidden rounded-md border-2 bg-white focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
@@ -795,11 +796,11 @@ export function EditTool({ tool }: { tool: ToolDef }) {
                     >
                       <PageThumb doc={doc} pageNumber={i + 1} />
                     </button>
-                    <span className="pointer-events-none absolute bottom-1 left-1 rounded bg-background/90 px-1 text-[10px] tabular-nums text-muted-foreground">
+                    <span className="pointer-events-none absolute bottom-1 start-1 rounded bg-background/90 px-1 text-[10px] tabular-nums text-muted-foreground">
                       {i + 1}
                     </span>
                     {counts[i] > 0 && (
-                      <span className="pointer-events-none absolute top-1 right-1 rounded-full bg-primary px-1.5 text-[10px] font-semibold text-primary-foreground">
+                      <span className="pointer-events-none absolute top-1 end-1 rounded-full bg-primary px-1.5 text-[10px] font-semibold text-primary-foreground">
                         {counts[i]}
                       </span>
                     )}
@@ -863,7 +864,7 @@ export function EditTool({ tool }: { tool: ToolDef }) {
                   </div>
                 </div>
               ) : (
-                <p className="p-6 text-center text-sm text-muted-foreground">{pdf.loading ? "Opening the file…" : ""}</p>
+                <p className="p-6 text-center text-sm text-muted-foreground">{pdf.loading ? messages.common.opening : ""}</p>
               )}
             </div>
           </div>
@@ -878,7 +879,14 @@ export function EditTool({ tool }: { tool: ToolDef }) {
         disabled={!ready || objects.length === 0}
         busy={runner.busy}
         progress={runner.progress}
-        hint={objects.length === 0 ? "Add text, a whiteout, an image, or a drawing to continue." : `${objects.length} item${objects.length === 1 ? "" : "s"} on ${Object.keys(counts).length} page${Object.keys(counts).length === 1 ? "" : "s"}`}
+        hint={
+          objects.length === 0
+            ? m.addSomething
+            : format(m.summary, {
+                items: plural(messages.common.itemCount, objects.length),
+                pages: plural(messages.common.pageCount, Object.keys(counts).length),
+              })
+        }
       />
     </div>
   );
@@ -887,6 +895,7 @@ export function EditTool({ tool }: { tool: ToolDef }) {
 // ---- page canvas -------------------------------------------------------------
 
 function PageCanvas({ doc, pageNumber, scale, width, height }: { doc: PDFDocumentProxy; pageNumber: number; scale: number; width: number; height: number }) {
+  const messages = useMessages();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [rendered, setRendered] = useState<string | null>(null);
   const key = `${pageNumber}@${scale}`;
@@ -903,7 +912,7 @@ function PageCanvas({ doc, pageNumber, scale, width, height }: { doc: PDFDocumen
 
   return (
     <>
-      <canvas ref={canvasRef} role="img" aria-label={`Page ${pageNumber}`} className={cn("block", rendered !== key && "invisible")} style={{ width, height }} />
+      <canvas ref={canvasRef} role="img" aria-label={format(messages.common.pageAlt, { page: pageNumber })} className={cn("block", rendered !== key && "invisible")} style={{ width, height }} />
       {rendered !== key && (
         <div className="absolute inset-0 flex items-center justify-center" aria-hidden="true">
           <span className="rounded-md bg-muted px-2 py-1 text-xs text-muted-foreground">{pageNumber}</span>
@@ -931,20 +940,21 @@ interface ObjectViewProps {
   onEditFocus: () => void;
 }
 
-function labelOf(obj: EditObj): string {
+function labelOf(m: Messages["edit"], obj: EditObj): string {
   switch (obj.type) {
     case "text":
-      return obj.text ? `Text box: ${obj.text.slice(0, 40)}` : "Empty text box";
+      return obj.text ? format(m.textBox, { text: obj.text.slice(0, 40) }) : m.emptyText;
     case "rect":
-      return obj.kind === "whiteout" ? "Whiteout rectangle" : "Highlight";
+      return obj.kind === "whiteout" ? m.whiteoutRect : m.highlightLabel;
     case "image":
-      return "Image";
+      return m.imageLabel;
     case "path":
-      return "Drawing";
+      return m.drawing;
   }
 }
 
 function ObjectView({ obj, scale, selected, editing, interactive, onPointerDown, onPointerMove, onPointerUp, onDelete, onStartEdit, onText, onMeasure, onEditFocus }: ObjectViewProps) {
+  const m = useMessages().edit;
   const textRef = useRef<HTMLTextAreaElement>(null);
 
   // A text box grows with its content. Measure the textarea and store the height in points.
@@ -977,8 +987,8 @@ function ObjectView({ obj, scale, selected, editing, interactive, onPointerDown,
         value={obj.text}
         readOnly={!editing}
         tabIndex={editing ? 0 : -1}
-        aria-label="Text"
-        placeholder={editing ? "Type here" : ""}
+        aria-label={m.textArea}
+        placeholder={editing ? m.typeHere : ""}
         spellCheck={false}
         onFocus={onEditFocus}
         onChange={(e) => onText(e.target.value)}
@@ -1031,7 +1041,7 @@ function ObjectView({ obj, scale, selected, editing, interactive, onPointerDown,
   return (
     <div
       role="group"
-      aria-label={labelOf(obj)}
+      aria-label={labelOf(m, obj)}
       tabIndex={interactive ? 0 : -1}
       data-selected={selected || undefined}
       className={cn(
@@ -1055,11 +1065,11 @@ function ObjectView({ obj, scale, selected, editing, interactive, onPointerDown,
         <>
           <button
             type="button"
-            aria-label="Delete item"
-            title="Delete"
+            aria-label={m.deleteItem}
+            title={m.delete}
             onPointerDown={(e) => e.stopPropagation()}
             onClick={onDelete}
-            className="absolute -top-3 -right-3 z-20 flex size-6 items-center justify-center rounded-full border bg-card text-muted-foreground shadow-sm hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+            className="absolute -top-3 -end-3 z-20 flex size-6 items-center justify-center rounded-full border bg-card text-muted-foreground shadow-sm hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
           >
             <X className="size-3.5" aria-hidden="true" />
           </button>
@@ -1070,7 +1080,7 @@ function ObjectView({ obj, scale, selected, editing, interactive, onPointerDown,
             onPointerMove={onPointerMove}
             onPointerUp={onPointerUp}
             onPointerCancel={onPointerUp}
-            className="absolute -right-1.5 -bottom-1.5 z-20 size-3.5 cursor-nwse-resize rounded-sm border border-primary bg-card"
+            className="absolute -end-1.5 -bottom-1.5 z-20 size-3.5 cursor-nwse-resize rounded-sm rtl:cursor-nesw-resize border border-primary bg-card"
           />
         </>
       )}

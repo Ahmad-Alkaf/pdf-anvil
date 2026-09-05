@@ -2,10 +2,11 @@
 
 import dynamic from "next/dynamic";
 import type { ComponentType } from "react";
-import type { ToolDef, ToolKind } from "@/lib/tools";
+import type { ToolKind } from "@/lib/tools";
+import type { ToolPage } from "@/locales/types";
 
 export interface ToolProps {
-  tool: ToolDef;
+  tool: ToolPage;
 }
 
 // One component per tool kind. Several registry pages share a kind (for

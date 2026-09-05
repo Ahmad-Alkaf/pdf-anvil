@@ -53,9 +53,9 @@ describe("imagesToPdf", () => {
     const onProgress = vi.fn();
     await imagesToPdf([png, png], fit, onProgress);
     expect(onProgress.mock.calls).toEqual([
-      [0, 2, "Adding a.png"],
-      [1, 2, "Adding a.png"],
-      [2, 2, "Saving"],
+      [0, 2, { key: "adding", name: "a.png" }],
+      [1, 2, { key: "adding", name: "a.png" }],
+      [2, 2, { key: "saving" }],
     ]);
   });
 

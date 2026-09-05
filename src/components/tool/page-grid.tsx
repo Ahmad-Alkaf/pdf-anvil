@@ -15,6 +15,8 @@ import { CSS } from "@dnd-kit/utilities";
 import { RotateCcw, RotateCw, Trash2 } from "lucide-react";
 import { PageThumb } from "./page-thumb";
 import type { PDFDocumentProxy } from "@/lib/pdf/pdfjs";
+import { useMessages } from "@/locales/context";
+import { format } from "@/locales/format";
 import { cn } from "@/lib/utils";
 
 interface Props {
@@ -120,6 +122,7 @@ function Tile({
     id: index,
     disabled: !sortable,
   });
+  const m = useMessages().toolShell.pageGrid;
 
   const hasActions = Boolean(onRotate || onDelete);
 
@@ -135,12 +138,12 @@ function Tile({
         selectable && "cursor-pointer",
       )}
       {...(sortable ? { ...attributes, ...listeners } : {})}
-      aria-label={`Page ${index + 1}, position ${position + 1}`}
+      aria-label={format(m.tile, { page: index + 1, position: position + 1 })}
       onClick={selectable && onToggle ? () => onToggle(index) : undefined}
     >
       <PageThumb doc={doc} pageNumber={index + 1} rotation={rotation} className="rounded-md border" />
 
-      <span className="absolute top-2.5 left-2.5 rounded-md bg-background/90 px-1.5 py-0.5 text-xs font-semibold shadow-sm">
+      <span className="absolute top-2.5 start-2.5 rounded-md bg-background/90 px-1.5 py-0.5 text-xs font-semibold shadow-sm">
         {position + 1}
       </span>
 
@@ -148,7 +151,7 @@ function Tile({
         <span
           aria-hidden="true"
           className={cn(
-            "absolute top-2.5 right-2.5 flex size-5 items-center justify-center rounded-full border-2 bg-background text-[10px] font-bold",
+            "absolute top-2.5 end-2.5 flex size-5 items-center justify-center rounded-full border-2 bg-background text-[10px] font-bold",
             selected ? "border-primary bg-primary text-primary-foreground" : "border-muted-foreground/40",
           )}
         >
@@ -160,16 +163,16 @@ function Tile({
         <span className="absolute inset-x-1.5 bottom-1.5 flex justify-center gap-1 rounded-md bg-background/90 p-1 opacity-0 shadow-sm transition-opacity group-focus-within:opacity-100 group-hover:opacity-100">
           {onRotate && (
             <>
-              <IconBtn label={`Rotate page ${index + 1} left`} onClick={() => onRotate(index, -90)}>
+              <IconBtn label={format(m.rotateLeft, { page: index + 1 })} onClick={() => onRotate(index, -90)}>
                 <RotateCcw className="size-4" />
               </IconBtn>
-              <IconBtn label={`Rotate page ${index + 1} right`} onClick={() => onRotate(index, 90)}>
+              <IconBtn label={format(m.rotateRight, { page: index + 1 })} onClick={() => onRotate(index, 90)}>
                 <RotateCw className="size-4" />
               </IconBtn>
             </>
           )}
           {onDelete && (
-            <IconBtn label={`Delete page ${index + 1}`} onClick={() => onDelete(index)} danger>
+            <IconBtn label={format(m.delete, { page: index + 1 })} onClick={() => onDelete(index)} danger>
               <Trash2 className="size-4" />
             </IconBtn>
           )}

@@ -4,6 +4,8 @@ import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { Camera, FileUp, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { acceptToExtensions, acceptToInputString, matchesAccept } from "@/lib/files";
+import { useMessages } from "@/locales/context";
+import { plural } from "@/locales/format";
 import { cn } from "@/lib/utils";
 
 interface Props {
@@ -18,6 +20,7 @@ interface Props {
 }
 
 export function Dropzone({ accept, multiple, onFiles, disabled, compact, label, capture }: Props) {
+  const m = useMessages().toolShell.dropzone;
   const inputId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
   const captureRef = useRef<HTMLInputElement>(null);
@@ -31,11 +34,11 @@ export function Dropzone({ accept, multiple, onFiles, disabled, compact, label, 
       const all = Array.from(list);
       const ok = all.filter((f) => matchesAccept(f, accept));
       const bad = all.length - ok.length;
-      setRejected(bad > 0 ? `${bad} file${bad > 1 ? "s" : ""} skipped. Accepted: ${exts.join(", ")}` : null);
+      setRejected(bad > 0 ? plural(m.skipped, bad, { list: exts.join(", ") }) : null);
       if (ok.length === 0) return;
       onFiles(multiple ? ok : [ok[0]]);
     },
-    [accept, exts, multiple, onFiles],
+    [accept, exts, m.skipped, multiple, onFiles],
   );
 
   // Paste support (Ctrl+V a file from the clipboard).
@@ -49,7 +52,7 @@ export function Dropzone({ accept, multiple, onFiles, disabled, compact, label, 
     return () => window.removeEventListener("paste", onPaste);
   }, [disabled, handleFiles]);
 
-  const text = label ?? (multiple ? "Drop files here or click to choose" : "Drop a file here or click to choose");
+  const text = label ?? (multiple ? m.dropFiles : m.dropFile);
 
   return (
     <div>
@@ -83,8 +86,8 @@ export function Dropzone({ accept, multiple, onFiles, disabled, compact, label, 
         <span className={cn("font-semibold", compact ? "text-sm" : "text-base sm:text-lg")}>{text}</span>
         {!compact && (
           <span className="text-sm text-muted-foreground">
-            {exts.join(", ")} · Files stay on your device
-            <Lock className="ml-1 inline size-3.5 align-[-2px]" aria-hidden="true" />
+            {exts.join(", ")} · {m.filesStay}
+            <Lock className="ms-1 inline size-3.5 align-[-2px]" aria-hidden="true" />
           </span>
         )}
         <input
@@ -110,7 +113,7 @@ export function Dropzone({ accept, multiple, onFiles, disabled, compact, label, 
             onClick={() => captureRef.current?.click()}
           >
             <Camera className="size-4" aria-hidden="true" />
-            Take a photo
+            {m.takePhoto}
           </Button>
           <input
             ref={captureRef}

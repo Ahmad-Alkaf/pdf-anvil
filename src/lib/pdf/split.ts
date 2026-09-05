@@ -1,6 +1,6 @@
 import { createPdf, loadPdf, saveStamped } from "./load";
 import { parseRanges, rangeIndices, rangeLabel } from "./ranges";
-import type { Progress } from "./merge";
+import type { Progress } from "./progress";
 
 export type SplitMode = "each" | "ranges";
 
@@ -32,7 +32,7 @@ export async function splitPdf(
 
   const results: SplitResult[] = [];
   for (let i = 0; i < groups.length; i++) {
-    onProgress?.(i, groups.length, `Writing ${groups[i].label}`);
+    onProgress?.(i, groups.length, { key: "writing", label: groups[i].label });
     const out = await createPdf();
     const pages = await out.copyPages(src, groups[i].indices);
     for (const page of pages) out.addPage(page);

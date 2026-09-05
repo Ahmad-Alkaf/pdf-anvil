@@ -32,7 +32,7 @@ import {
 } from "pdf-lib";
 import { loadPdf, saveStamped } from "./load";
 import { PdfError } from "./errors";
-import type { Progress } from "./merge";
+import type { Progress } from "./progress";
 
 export type EditFont = "Helvetica" | "Times" | "Courier";
 
@@ -304,7 +304,7 @@ export async function applyEdits(bytes: Uint8Array, edits: EditOp[], onProgress?
 
   for (let i = 0; i < edits.length; i++) {
     const op = edits[i];
-    onProgress?.(i, edits.length, `Placing item ${i + 1} of ${edits.length}`);
+    onProgress?.(i, edits.length, { key: "placing", index: i + 1, total: edits.length });
     const page = pages[op.page];
     if (!page) continue;
     const frame = frameOf(page);
@@ -324,6 +324,6 @@ export async function applyEdits(bytes: Uint8Array, edits: EditOp[], onProgress?
     }
   }
 
-  onProgress?.(edits.length, edits.length, "Saving");
+  onProgress?.(edits.length, edits.length, { key: "saving" });
   return saveStamped(doc);
 }

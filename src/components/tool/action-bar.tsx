@@ -3,6 +3,8 @@
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { RunProgress } from "@/hooks/use-tool-runner";
+import { useMessages } from "@/locales/context";
+import { format } from "@/locales/format";
 
 interface Props {
   label: string;
@@ -15,6 +17,7 @@ interface Props {
 }
 
 export function ActionBar({ label, onRun, onReset, disabled, busy, progress, hint }: Props) {
+  const m = useMessages();
   const pct = progress.total > 0 ? Math.round((progress.done / progress.total) * 100) : null;
   return (
     <div className="sticky bottom-0 z-30 -mx-4 border-t bg-background/90 px-4 py-3 backdrop-blur sm:static sm:mx-0 sm:rounded-xl sm:border sm:bg-card sm:px-4">
@@ -23,7 +26,7 @@ export function ActionBar({ label, onRun, onReset, disabled, busy, progress, hin
           {busy ? (
             <>
               <Loader2 className="size-4 animate-spin" aria-hidden="true" />
-              {progress.label ?? "Working"}
+              {progress.label ?? m.toolShell.actionBar.working}
               {pct !== null && ` ${pct}%`}
             </>
           ) : (
@@ -31,7 +34,7 @@ export function ActionBar({ label, onRun, onReset, disabled, busy, progress, hin
           )}
         </Button>
         <Button variant="ghost" onClick={onReset} disabled={busy}>
-          Start over
+          {m.common.startOver}
         </Button>
         {hint && <span className="text-sm text-muted-foreground">{hint}</span>}
       </div>
@@ -45,7 +48,7 @@ export function ActionBar({ label, onRun, onReset, disabled, busy, progress, hin
       )}
       {busy && (
         <p className="sr-only" aria-live="polite">
-          {progress.label} {pct !== null ? `${pct} percent` : ""}
+          {progress.label} {pct !== null ? format(m.toolShell.actionBar.percent, { pct }) : ""}
         </p>
       )}
     </div>

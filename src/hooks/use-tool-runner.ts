@@ -4,12 +4,16 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { track } from "@/lib/analytics";
 import type { OutputFile } from "@/lib/download";
 import { toPdfError } from "@/lib/pdf/errors";
+import type { Progress } from "@/lib/pdf/progress";
+import { useMessages } from "@/locales/context";
+import { errorMessage, progressLabel } from "@/locales/format";
 
 export type RunStatus = "idle" | "processing" | "done" | "error";
 
 export interface RunProgress {
   done: number;
   total: number;
+  /** Text in the current language, ready to show. */
   label?: string;
 }
 
@@ -26,6 +30,7 @@ export interface RunMeta {
 }
 
 export function useToolRunner() {
+  const messages = useMessages();
   const [status, setStatus] = useState<RunStatus>("idle");
   const [progress, setProgress] = useState<RunProgress>({ done: 0, total: 0 });
   const [error, setError] = useState<string | null>(null);
@@ -48,18 +53,15 @@ export function useToolRunner() {
   }, [revokeAll]);
 
   const run = useCallback(
-    async (
-      task: (onProgress: (done: number, total: number, label?: string) => void) => Promise<OutputFile[]>,
-      meta: RunMeta,
-    ) => {
+    async (task: (onProgress: Progress) => Promise<OutputFile[]>, meta: RunMeta) => {
       revokeAll();
       setResults([]);
       setError(null);
       setStatus("processing");
-      setProgress({ done: 0, total: 0, label: "Starting" });
+      setProgress({ done: 0, total: 0, label: messages.toolShell.progress.starting });
       const started = performance.now();
       try {
-        const files = await task((done, total, label) => setProgress({ done, total, label }));
+        const files = await task((done, total, step) => setProgress({ done, total, label: progressLabel(messages, step) }));
         const items: ResultItem[] = files.map((f) => {
           const url = URL.createObjectURL(f.blob);
           urlsRef.current.push(url);
@@ -75,11 +77,11 @@ export function useToolRunner() {
           ms: Math.round(performance.now() - started),
         });
       } catch (err) {
-        setError(toPdfError(err).message);
+        setError(errorMessage(messages, toPdfError(err)));
         setStatus("error");
       }
     },
-    [revokeAll],
+    [messages, revokeAll],
   );
 
   return { status, progress, error, results, run, reset, busy: status === "processing" };

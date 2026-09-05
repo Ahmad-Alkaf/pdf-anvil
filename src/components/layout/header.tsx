@@ -7,7 +7,9 @@ import { useEffect, useId, useRef, useState, useSyncExternalStore } from "react"
 import { ChevronDown, Menu, Moon, Sun, X } from "lucide-react";
 import { Logo } from "@/components/logo";
 import { ToolIconGlyph } from "@/components/tool-icon";
-import { HEADER_TOOLS, NAV_TOOLS, VARIANT_TOOLS } from "@/lib/tools";
+import { HEADER_LIMIT } from "@/lib/tools";
+import { useLocale } from "@/locales/context";
+import { localeHref } from "@/locales/href";
 import { cn } from "@/lib/utils";
 
 // `false` during server rendering and hydration, `true` after mount.
@@ -29,6 +31,13 @@ const MD_LINKS = 3;
 
 export function Header() {
   const pathname = usePathname();
+  const { locale, messages, nav } = useLocale();
+  const m = messages.header;
+  const byPriority = (a: { priority: number }, b: { priority: number }) => a.priority - b.priority;
+  const navTools = nav.filter((p) => p.nav).sort(byPriority);
+  const variantTools = nav.filter((p) => !p.nav).sort(byPriority);
+  const headerTools = navTools.slice(0, HEADER_LIMIT);
+  const href = (slug: string) => localeHref(locale, slug);
   const { resolvedTheme, setTheme } = useTheme();
   const [open, setOpen] = useState(false);
   const [allOpen, setAllOpen] = useState(false);
@@ -41,7 +50,7 @@ export function Header() {
   const mounted = useMounted();
   const isDark = mounted && resolvedTheme === "dark";
   const [animateIcon, setAnimateIcon] = useState(false);
-  const themeLabel = !mounted ? "Toggle theme" : isDark ? "Switch to light theme" : "Switch to dark theme";
+  const themeLabel = !mounted ? m.toggleTheme : isDark ? m.switchToLight : m.switchToDark;
   const iconAnimation = animateIcon ? "animate-theme-icon-enter motion-reduce:animate-none" : "";
 
   // Close both menus after navigation (state adjusted during render).
@@ -78,17 +87,17 @@ export function Header() {
   return (
     <header className="sticky top-0 z-40 border-b bg-background/85 backdrop-blur supports-backdrop-filter:bg-background/70">
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
-        <Link href="/" className="shrink-0">
+        <Link href={localeHref(locale)} className="shrink-0">
           <Logo />
         </Link>
 
-        <nav aria-label="Tools" className="hidden shrink-0 md:block">
+        <nav aria-label={m.toolsNav} className="hidden shrink-0 md:block">
           <ul className="flex items-center gap-1">
-            {HEADER_TOOLS.map((tool, i) => {
-              const active = pathname === `/${tool.slug}`;
+            {headerTools.map((tool, i) => {
+              const active = pathname === href(tool.slug);
               return (
                 <li key={tool.slug} className={i >= MD_LINKS ? "hidden lg:block" : undefined}>
-                  <Link href={`/${tool.slug}`} aria-current={active ? "page" : undefined} className={linkClass(active)}>
+                  <Link href={href(tool.slug)} aria-current={active ? "page" : undefined} className={linkClass(active)}>
                     {tool.navLabel}
                   </Link>
                 </li>
@@ -103,21 +112,21 @@ export function Header() {
                 aria-haspopup="true"
                 onClick={() => setAllOpen((v) => !v)}
               >
-                All tools
+                {m.allTools}
                 <ChevronDown className={cn("size-4 transition-transform", allOpen && "rotate-180")} aria-hidden="true" />
               </button>
               {allOpen && (
                 <div
                   id={allPanelId}
-                  className="absolute right-0 top-full mt-2 w-[34rem] max-w-[calc(100vw-2rem)] rounded-xl border bg-card p-3 text-card-foreground shadow-lg"
+                  className="absolute end-0 top-full mt-2 w-[34rem] max-w-[calc(100vw-2rem)] rounded-xl border bg-card p-3 text-card-foreground shadow-lg"
                 >
                   <ul className="grid grid-cols-2 gap-1">
-                    {NAV_TOOLS.map((tool) => {
-                      const active = pathname === `/${tool.slug}`;
+                    {navTools.map((tool) => {
+                      const active = pathname === href(tool.slug);
                       return (
                         <li key={tool.slug}>
                           <Link
-                            href={`/${tool.slug}`}
+                            href={href(tool.slug)}
                             aria-current={active ? "page" : undefined}
                             className={cn(
                               "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium",
@@ -133,20 +142,24 @@ export function Header() {
                       );
                     })}
                   </ul>
-                  <p className="mt-3 border-t px-3 pt-3 text-xs font-medium text-muted-foreground">More pages</p>
-                  <ul className="mt-1 flex flex-wrap gap-x-1 gap-y-0.5 px-1">
-                    {VARIANT_TOOLS.map((tool) => (
-                      <li key={tool.slug}>
-                        <Link
-                          href={`/${tool.slug}`}
-                          aria-current={pathname === `/${tool.slug}` ? "page" : undefined}
-                          className="block rounded-md px-2 py-1 text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
-                        >
-                          {tool.name}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
+                  {variantTools.length > 0 && (
+                    <>
+                      <p className="mt-3 border-t px-3 pt-3 text-xs font-medium text-muted-foreground">{m.morePages}</p>
+                      <ul className="mt-1 flex flex-wrap gap-x-1 gap-y-0.5 px-1">
+                        {variantTools.map((tool) => (
+                          <li key={tool.slug}>
+                            <Link
+                              href={href(tool.slug)}
+                              aria-current={pathname === href(tool.slug) ? "page" : undefined}
+                              className="block rounded-md px-2 py-1 text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
+                            >
+                              {tool.name}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </>
+                  )}
                 </div>
               )}
             </li>
@@ -181,7 +194,7 @@ export function Header() {
             className="inline-flex size-9 items-center justify-center rounded-md hover:bg-muted md:hidden"
             aria-expanded={open}
             aria-controls="mobile-nav"
-            aria-label={open ? "Close menu" : "Open menu"}
+            aria-label={open ? m.closeMenu : m.openMenu}
             onClick={() => setOpen((v) => !v)}
           >
             {open ? <X className="size-5" /> : <Menu className="size-5" />}
@@ -190,15 +203,15 @@ export function Header() {
       </div>
 
       {open && (
-        <nav id="mobile-nav" aria-label="Tools" className="border-t md:hidden">
+        <nav id="mobile-nav" aria-label={m.toolsNav} className="border-t md:hidden">
           <ul className="mx-auto grid max-w-6xl grid-cols-2 gap-1 px-4 py-3">
-            {NAV_TOOLS.map((tool) => (
+            {navTools.map((tool) => (
               <li key={tool.slug}>
                 <Link
-                  href={`/${tool.slug}`}
+                  href={href(tool.slug)}
                   className={cn(
                     "block rounded-md px-3 py-2 text-sm font-medium",
-                    pathname === `/${tool.slug}` ? "bg-accent text-accent-foreground" : "hover:bg-muted",
+                    pathname === href(tool.slug) ? "bg-accent text-accent-foreground" : "hover:bg-muted",
                   )}
                 >
                   {tool.name}

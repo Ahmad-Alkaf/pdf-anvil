@@ -13,17 +13,22 @@ import { useToolRunner } from "@/hooks/use-tool-runner";
 import { protectPdf } from "@/lib/pdf/qpdf";
 import { bytesToBlob } from "@/lib/download";
 import { outputName } from "@/lib/names";
-import type { ToolDef } from "@/lib/tools";
+import { useMessages } from "@/locales/context";
+import type { Messages, ToolPage } from "@/locales/types";
 
 type Permission = "allowPrinting" | "allowCopying" | "allowModifying";
 
-const PERMISSIONS: { key: Permission; label: string; hint: string }[] = [
-  { key: "allowPrinting", label: "Allow printing", hint: "The reader can print the file." },
-  { key: "allowCopying", label: "Allow copying", hint: "The reader can copy text and images." },
-  { key: "allowModifying", label: "Allow editing", hint: "The reader can change the file, fill forms, and add comments." },
-];
+function permissionOptions(m: Messages["protect"]): { key: Permission; label: string; hint: string }[] {
+  return [
+    { key: "allowPrinting", label: m.allowPrinting, hint: m.allowPrintingHint },
+    { key: "allowCopying", label: m.allowCopying, hint: m.allowCopyingHint },
+    { key: "allowModifying", label: m.allowEditing, hint: m.allowEditingHint },
+  ];
+}
 
-export function ProtectTool({ tool }: { tool: ToolDef }) {
+export function ProtectTool({ tool }: { tool: ToolPage }) {
+  const m = useMessages().protect;
+  const PERMISSIONS = permissionOptions(m);
   const [file, setFile] = useState<File | null>(null);
   const [userPassword, setUserPassword] = useState("");
   const [ownerPassword, setOwnerPassword] = useState("");
@@ -51,7 +56,7 @@ export function ProtectTool({ tool }: { tool: ToolDef }) {
         const out = await protectPdf(bytes, { userPassword, ownerPassword: ownerPassword || undefined, ...permissions });
         return [{ name: outputName(file.name), blob: bytesToBlob(out, "application/pdf") }];
       },
-      { tool: tool.slug, files: 1, pages: pdf.pageCount, output: "pdf" },
+      { tool: tool.id, files: 1, pages: pdf.pageCount, output: "pdf" },
     );
   }
 
@@ -63,7 +68,7 @@ export function ProtectTool({ tool }: { tool: ToolDef }) {
         results={runner.results}
         zipName="protected.zip"
         onStartOver={reset}
-        note="The file is encrypted with AES-256. Keep the password in a safe place. Without it, the file cannot be opened."
+        note={m.note}
       />
     );
   }
@@ -84,34 +89,34 @@ export function ProtectTool({ tool }: { tool: ToolDef }) {
         className="space-y-4"
       >
         <fieldset className="rounded-xl border bg-card p-4" disabled={runner.busy}>
-          <legend className="px-1 text-xs font-medium text-muted-foreground">Passwords</legend>
+          <legend className="px-1 text-xs font-medium text-muted-foreground">{m.passwords}</legend>
           <div className="grid max-w-3xl gap-4 sm:grid-cols-2">
             <PasswordField
-              label="Password to open the file"
+              label={m.openPassword}
               value={userPassword}
               onChange={setUserPassword}
               required
               autoFocus
               autoComplete="new-password"
-              hint="Every reader must type this password to open the file."
+              hint={m.openHint}
             />
             <PasswordField
-              label="Owner password"
+              label={m.ownerPassword}
               value={ownerPassword}
               onChange={setOwnerPassword}
               autoComplete="new-password"
-              placeholder="Optional"
+              placeholder={m.optional}
               hint={
                 sameOwner
-                  ? "Empty: the password to open the file is used for both. Then the permissions below do not limit a reader who knows it."
-                  : "Gives full access and removes the permission limits below."
+                  ? m.ownerHintEmpty
+                  : m.ownerHintSet
               }
             />
           </div>
         </fieldset>
 
         <fieldset className="rounded-xl border bg-card p-4" disabled={runner.busy} aria-describedby={permissionsId}>
-          <legend className="px-1 text-xs font-medium text-muted-foreground">Permissions</legend>
+          <legend className="px-1 text-xs font-medium text-muted-foreground">{m.permissions}</legend>
           <div className="grid gap-3 sm:grid-cols-3">
             {PERMISSIONS.map((p) => (
               <label key={p.key} className="flex cursor-pointer items-start gap-2.5 rounded-lg border p-3 hover:bg-muted/50">
@@ -129,8 +134,7 @@ export function ProtectTool({ tool }: { tool: ToolDef }) {
             ))}
           </div>
           <p id={permissionsId} className="mt-3 text-xs text-muted-foreground">
-            Permissions apply to a reader who opens the file with the password to open it. A reader with the owner
-            password can do everything.
+            {m.permissionsNote}
           </p>
         </fieldset>
         <button type="submit" className="sr-only" tabIndex={-1} aria-hidden="true">
@@ -146,7 +150,7 @@ export function ProtectTool({ tool }: { tool: ToolDef }) {
         disabled={!pdf.doc || !userPassword}
         busy={runner.busy}
         progress={runner.progress}
-        hint={!userPassword ? "Type a password to open the file first." : "AES-256 encryption"}
+        hint={!userPassword ? m.typeFirst : m.aes}
       />
     </div>
   );

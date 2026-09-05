@@ -4,7 +4,8 @@ import { ImageResponse } from "next/og";
 import { BRAND_RED, MARK_PATH, MARK_VIEWBOX } from "./brand";
 import { SITE_DOMAIN } from "./site";
 
-export const OG_SIZE = { width: 1200, height: 630 };
+export { OG_SIZE } from "./og-size";
+import { OG_SIZE } from "./og-size";
 
 let fontPromise: Promise<ArrayBuffer> | null = null;
 function loadFont(): Promise<ArrayBuffer> {
@@ -14,7 +15,7 @@ function loadFont(): Promise<ArrayBuffer> {
   return fontPromise;
 }
 
-export async function renderOg({ title, subtitle }: { title: string; subtitle: string }) {
+export async function renderOg({ title, subtitle, footer }: { title: string; subtitle: string; footer: string }) {
   const font = await loadFont();
   return new ImageResponse(
     (
@@ -49,7 +50,7 @@ export async function renderOg({ title, subtitle }: { title: string; subtitle: s
 
         <div style={{ display: "flex", justifyContent: "space-between", fontSize: 26, color: "#78716c" }}>
           <span>{SITE_DOMAIN}</span>
-          <span>Free · No upload · No limits</span>
+          <span>{footer}</span>
         </div>
         <div
           style={{
