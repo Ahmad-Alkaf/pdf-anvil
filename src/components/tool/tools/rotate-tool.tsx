@@ -14,7 +14,7 @@ import { usePdfDocument } from "@/hooks/use-pdf-document";
 import { useToolRunner } from "@/hooks/use-tool-runner";
 import { rotatePdf, type RotationDelta } from "@/lib/pdf/rotate";
 import { bytesToBlob } from "@/lib/download";
-import { baseName } from "@/lib/files";
+import { outputName } from "@/lib/names";
 import type { ToolDef } from "@/lib/tools";
 
 const norm = (deg: number): RotationDelta => ((((deg % 360) + 360) % 360) as RotationDelta);
@@ -50,7 +50,7 @@ export function RotateTool({ tool }: { tool: ToolDef }) {
       async () => {
         const bytes = new Uint8Array(await file.arrayBuffer());
         const out = await rotatePdf(bytes, { deltas: rotations });
-        return [{ name: `${baseName(file.name)}-rotated.pdf`, blob: bytesToBlob(out, "application/pdf") }];
+        return [{ name: outputName(file.name), blob: bytesToBlob(out, "application/pdf") }];
       },
       { tool: tool.slug, files: 1, pages: pdf.pageCount, output: "pdf" },
     );

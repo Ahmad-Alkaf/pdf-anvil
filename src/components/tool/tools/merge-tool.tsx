@@ -13,7 +13,8 @@ import { closePdf, openPdf } from "@/lib/pdf/pdfjs";
 import { renderThumbnail } from "@/lib/pdf/thumbnails";
 import { toPdfError } from "@/lib/pdf/errors";
 import { bytesToBlob } from "@/lib/download";
-import { baseName, looksLikePdf } from "@/lib/files";
+import { looksLikePdf } from "@/lib/files";
+import { combinedName } from "@/lib/names";
 import type { ToolDef } from "@/lib/tools";
 
 interface MergeItem extends FileItem {
@@ -78,7 +79,7 @@ export function MergeTool({ tool }: { tool: ToolDef }) {
         const inputs: Uint8Array[] = [];
         for (const item of items) inputs.push(new Uint8Array(await item.file.arrayBuffer()));
         const out = await mergePdfs(inputs, onProgress);
-        return [{ name: `${baseName(items[0].file.name)}-merged.pdf`, blob: bytesToBlob(out, "application/pdf") }];
+        return [{ name: combinedName(items.map((i) => i.file.name)), blob: bytesToBlob(out, "application/pdf") }];
       },
       { tool: tool.slug, files: items.length, pages: totalPages, output: "pdf" },
     );

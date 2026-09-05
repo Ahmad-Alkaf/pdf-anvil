@@ -15,7 +15,7 @@ import { useToolRunner } from "@/hooks/use-tool-runner";
 import { organizePdf } from "@/lib/pdf/organize";
 import type { RotationDelta } from "@/lib/pdf/rotate";
 import { bytesToBlob } from "@/lib/download";
-import { baseName } from "@/lib/files";
+import { outputName } from "@/lib/names";
 import type { ToolDef } from "@/lib/tools";
 
 const norm = (deg: number): RotationDelta => ((((deg % 360) + 360) % 360) as RotationDelta);
@@ -78,7 +78,7 @@ export function OrganizeTool({ tool }: { tool: ToolDef }) {
       async () => {
         const bytes = new Uint8Array(await file.arrayBuffer());
         const out = await organizePdf(bytes, { order, rotations });
-        return [{ name: `${baseName(file.name)}-organized.pdf`, blob: bytesToBlob(out, "application/pdf") }];
+        return [{ name: outputName(file.name), blob: bytesToBlob(out, "application/pdf") }];
       },
       { tool: tool.slug, files: 1, pages: order.length, output: "pdf" },
     );

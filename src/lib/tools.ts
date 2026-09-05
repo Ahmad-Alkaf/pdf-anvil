@@ -75,7 +75,7 @@ const FREE_FAQ: ToolFaq = {
 const IMAGE_STEPS: [string, string, string] = [
   "Drop one or more images into the box, or click to choose them.",
   "Drag the images into order and pick a page size.",
-  "Click Create PDF and download the file.",
+  "Click Create PDF. The file downloads at once.",
 ];
 
 const IMAGE_FIT_FAQ: ToolFaq = {
@@ -91,7 +91,7 @@ const IMAGE_MANY_FAQ: ToolFaq = {
 const PDF_TO_IMAGE_STEPS: [string, string, string] = [
   "Drop a PDF into the box, or click to choose it.",
   "Pick the image format and the resolution you need.",
-  "Click Convert to images. Download each image, or all of them as a ZIP.",
+  "Click Convert to images. A ZIP with all images downloads at once. You can also download each image on its own.",
 ];
 
 const DPI_FAQ: ToolFaq = {
@@ -126,7 +126,7 @@ export const TOOLS: readonly ToolDef[] = [
     steps: [
       "Drop two or more PDF files into the box, or click to choose them.",
       "Drag the files into the order you want them to appear.",
-      "Click Merge PDFs and download the combined file.",
+      "Click Merge PDFs. The combined file downloads at once.",
     ],
     faq: [
       {
@@ -169,7 +169,7 @@ export const TOOLS: readonly ToolDef[] = [
     steps: [
       "Drop a PDF into the box, or click to choose it.",
       "Pick \"Every page\" or type page ranges such as 1-3, 5, 8-.",
-      "Click Split PDF. Download each file, or all of them as a ZIP.",
+      "Click Split PDF. A ZIP with all parts downloads at once. You can also download each part on its own.",
     ],
     faq: [
       {
@@ -212,7 +212,7 @@ export const TOOLS: readonly ToolDef[] = [
     steps: [
       "Drop a PDF into the box, or click to choose it.",
       "Rotate all pages with the top buttons, or hover a page and rotate only that one.",
-      "Click Save rotated PDF and download the file.",
+      "Click Save rotated PDF. The file downloads at once.",
     ],
     faq: [
       {
@@ -255,7 +255,7 @@ export const TOOLS: readonly ToolDef[] = [
     steps: [
       "Drop a PDF into the box, or click to choose it.",
       "Drag pages into a new order. Hover a page to delete or rotate it.",
-      "Click Save organized PDF and download the file.",
+      "Click Save organized PDF. The file downloads at once.",
     ],
     faq: [
       {

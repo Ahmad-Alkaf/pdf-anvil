@@ -13,7 +13,7 @@ import { Segmented } from "@/components/ui/segmented";
 import { usePdfDocument } from "@/hooks/use-pdf-document";
 import { useToolRunner } from "@/hooks/use-tool-runner";
 import { pdfToImages, type Dpi, type ImageFormat } from "@/lib/pdf/pdf-to-images";
-import { baseName, pad } from "@/lib/files";
+import { outputName, pageName } from "@/lib/names";
 import type { ToolDef } from "@/lib/tools";
 
 export function PdfToImagesTool({ tool }: { tool: ToolDef }) {
@@ -56,9 +56,8 @@ export function PdfToImagesTool({ tool }: { tool: ToolDef }) {
         const bytes = new Uint8Array(await file.arrayBuffer());
         const images = await pdfToImages(bytes, { format, dpi, pages }, onProgress);
         setCapped(images.some((i) => i.capped));
-        const base = baseName(file.name);
         const width = String(pdf.pageCount).length;
-        return images.map((img) => ({ name: `${base}-page-${pad(img.pageNumber, width)}.${format}`, blob: img.blob }));
+        return images.map((img) => ({ name: pageName(file.name, img.pageNumber, format, width), blob: img.blob }));
       },
       { tool: tool.slug, files: 1, pages: pages.length, output: "images" },
     );
@@ -70,7 +69,7 @@ export function PdfToImagesTool({ tool }: { tool: ToolDef }) {
     return (
       <ResultPanel
         results={runner.results}
-        zipName={`${baseName(file.name)}-${format}.zip`}
+        zipName={outputName(file.name, "zip")}
         onStartOver={reset}
         previews
         note={capped ? "Some pages were very large and were rendered at a lower resolution to fit browser limits." : undefined}

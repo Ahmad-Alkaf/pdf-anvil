@@ -14,7 +14,7 @@ import { useToolRunner } from "@/hooks/use-tool-runner";
 import { splitPdf, type SplitMode } from "@/lib/pdf/split";
 import { parseRanges } from "@/lib/pdf/ranges";
 import { bytesToBlob } from "@/lib/download";
-import { baseName } from "@/lib/files";
+import { outputName, splitPartName } from "@/lib/names";
 import type { ToolDef } from "@/lib/tools";
 
 export function SplitTool({ tool }: { tool: ToolDef }) {
@@ -48,8 +48,8 @@ export function SplitTool({ tool }: { tool: ToolDef }) {
       async (onProgress) => {
         const bytes = new Uint8Array(await file.arrayBuffer());
         const parts = await splitPdf(bytes, { mode, ranges }, onProgress);
-        const base = baseName(file.name);
-        return parts.map((p) => ({ name: `${base}-${p.label}.pdf`, blob: bytesToBlob(p.bytes, "application/pdf") }));
+        const width = String(pdf.pageCount).length;
+        return parts.map((p) => ({ name: splitPartName(file.name, p.label, width), blob: bytesToBlob(p.bytes, "application/pdf") }));
       },
       { tool: tool.slug, files: 1, pages: pdf.pageCount, output: "pdfs" },
     );
@@ -58,7 +58,7 @@ export function SplitTool({ tool }: { tool: ToolDef }) {
   if (!file) return <Dropzone accept={tool.accept} multiple={false} onFiles={(f) => setFile(f[0])} />;
 
   if (runner.status === "done") {
-    return <ResultPanel results={runner.results} zipName={`${baseName(file.name)}-split.zip`} onStartOver={reset} />;
+    return <ResultPanel results={runner.results} zipName={outputName(file.name, "zip")} onStartOver={reset} />;
   }
 
   const ready = !!pdf.doc && !rangeError && (mode === "each" || ranges.trim().length > 0);

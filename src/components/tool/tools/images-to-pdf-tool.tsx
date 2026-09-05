@@ -11,7 +11,7 @@ import { Segmented } from "@/components/ui/segmented";
 import { useToolRunner } from "@/hooks/use-tool-runner";
 import { imagesToPdf, type OrientationOption, type PageSizeOption } from "@/lib/pdf/images-to-pdf";
 import { bytesToBlob } from "@/lib/download";
-import { baseName } from "@/lib/files";
+import { combinedName } from "@/lib/names";
 import type { ToolDef } from "@/lib/tools";
 
 let seq = 0;
@@ -76,7 +76,7 @@ export function ImagesToPdfTool({ tool }: { tool: ToolDef }) {
           { pageSize, orientation, margin },
           onProgress,
         );
-        return [{ name: `${baseName(items[0].file.name)}.pdf`, blob: bytesToBlob(out, "application/pdf") }];
+        return [{ name: combinedName(items.map((i) => i.file.name)), blob: bytesToBlob(out, "application/pdf") }];
       },
       { tool: tool.slug, files: items.length, pages: items.length, output: "pdf" },
     );
