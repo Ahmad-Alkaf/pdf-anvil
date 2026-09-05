@@ -1054,7 +1054,7 @@ const MIRRORED_PAGES: readonly LocalePage[] = [
  */
 export const TAHRIR_VARIANT: LocalePage = {
   id: "edit:tahrir",
-  slug: "tahrir-pdf",
+  slug: "pdf-editor",
   kind: "edit",
   nav: false,
   priority: 16,

@@ -31,6 +31,7 @@ const ALL: LocaleBundle[] = Object.values(FOLDERS).map((m) => m.default);
 
 const LATIN_SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const ENGLISH_SLUGS = new Set(en.pages.map((p) => p.slug));
+const ENGLISH_WORDS = new Set([...ENGLISH_SLUGS].flatMap((slug) => slug.split("-")).concat(["editor", "viewer", "reader", "converter", "compressor", "merger", "splitter"]));
 const ENGLISH_IDS = new Set(en.pages.map((p) => p.id));
 
 /** Every `{name}` token of a string, in order of first appearance. */
@@ -77,6 +78,8 @@ describe("locale folders", () => {
           if (bundle.meta.script === "other") {
             const page = bundle.pages.find((p) => p.slug === slug)!;
             if (!page.id.includes(":")) expect(slug, `${code}/${slug} must keep the English slug ${page.id}`).toBe(page.id);
+            // A locale-only variant needs an English phrase, not a transliteration of the local word.
+            else expect(slug.split("-").every((w) => ENGLISH_WORDS.has(w)), `${code}/${slug} must be English words`).toBe(true);
           }
         }
       });

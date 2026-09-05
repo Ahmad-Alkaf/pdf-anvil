@@ -49,9 +49,9 @@ Written in English so the reviewer can compare quickly. Locale: `ar`, script `ot
 | pdf-viewer | فتح ملف pdf / قارئ pdf |
 | edit-pdf | تعديل ملف pdf |
 | sign-pdf | توقيع ملف pdf |
-| (tahrir-pdf, not published) | تحرير ملف pdf |
+| pdf-editor (locale-only `edit:tahrir`) | تحرير ملف pdf / محرر pdf |
 
-Priorities: nav pages 1-11 by Arabic demand (merge 1, image-to-pdf 2, compress 3, pdf-to-image 4, edit 5, split 6, viewer 7, unlock 8, protect 9, rotate 10, organize 11); variants 12-20 (jpg-to-pdf 12, pdf-to-jpg 13, sign 14, reduce-size 15, tahrir 16 reserved, scan 17, png-to-pdf 18, extract 19, pdf-to-png 20).
+Priorities: nav pages 1-11 by Arabic demand (merge 1, image-to-pdf 2, compress 3, pdf-to-image 4, edit 5, split 6, viewer 7, unlock 8, protect 9, rotate 10, organize 11); variants 12-20 (jpg-to-pdf 12, pdf-to-jpg 13, sign 14, reduce-size 15, tahrir (pdf-editor) 16, scan 17, png-to-pdf 18, extract 19, pdf-to-png 20).
 
 ## Glossary (one term per concept)
 
