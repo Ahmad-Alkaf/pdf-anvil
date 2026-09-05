@@ -1,4 +1,4 @@
-import { Inter, Space_Grotesk } from "next/font/google";
+import { Inter, Space_Grotesk, Vazirmatn } from "next/font/google";
 import Script from "next/script";
 import { ThemeProvider } from "@/providers/theme-provider";
 import { LocaleProvider } from "@/locales/context";
@@ -15,6 +15,16 @@ const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
   weight: ["500", "600", "700"],
   display: "swap",
+});
+
+// Arabic (and Persian) glyphs. Not preloaded: only right-to-left pages use it,
+// and the browser fetches a font file only when text needs it.
+const vazirmatn = Vazirmatn({
+  variable: "--font-arabic",
+  subsets: ["arabic"],
+  weight: ["400", "500", "700"],
+  display: "swap",
+  preload: false,
 });
 
 const analyticsEnabled = Boolean(UMAMI_SRC && UMAMI_WEBSITE_ID);
@@ -35,7 +45,7 @@ export function SiteDocument({ locale, pageId, children }: { locale: Locale; pag
     <html
       lang={bundle.meta.htmlLang}
       dir={bundle.meta.dir}
-      className={`${inter.variable} ${spaceGrotesk.variable} h-full antialiased`}
+      className={`${inter.variable} ${spaceGrotesk.variable} ${vazirmatn.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <body className="flex min-h-full flex-col">

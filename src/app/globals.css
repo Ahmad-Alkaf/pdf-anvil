@@ -122,6 +122,14 @@
   h4 {
     @apply font-heading tracking-tight;
   }
+  /* Right-to-left locales: the Latin fonts have no Arabic glyphs. */
+  html[dir="rtl"] {
+    font-family: var(--font-arabic), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  }
+  html[dir="rtl"] :is(h1, h2, h3, h4) {
+    font-family: var(--font-arabic), var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+    letter-spacing: 0;
+  }
   ::selection {
     @apply bg-primary/20;
   }

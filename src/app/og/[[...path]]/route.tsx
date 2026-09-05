@@ -18,9 +18,11 @@ export function generateStaticParams() {
 export async function GET(_request: Request, { params }: { params: Promise<{ path?: string[] }> }) {
   const target = parseOgPath((await params).path ?? []);
   if (!target) return new Response("Not found", { status: 404 });
-  const { common } = getLocaleBundle(target.locale).messages;
+  const bundle = getLocaleBundle(target.locale);
+  const { common } = bundle.messages;
+  const base = { footer: common.ogFooter, locale: bundle.meta.code, dir: bundle.meta.dir };
   if (target.route.kind === "tool") {
-    return renderOg({ title: target.route.page.h1, subtitle: firstSentence(target.route.page.intro), footer: common.ogFooter });
+    return renderOg({ ...base, title: target.route.page.h1, subtitle: firstSentence(target.route.page.intro) });
   }
-  return renderOg({ title: common.tagline, subtitle: common.ogSubtitle, footer: common.ogFooter });
+  return renderOg({ ...base, title: common.tagline, subtitle: common.ogSubtitle });
 }

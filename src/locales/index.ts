@@ -6,6 +6,7 @@
 import { HEADER_LIMIT, type ToolIcon } from "@/lib/tools";
 import { KIND_SPEC, KINDS } from "./kinds";
 import { DEFAULT_LOCALE, localeHref } from "./href";
+import ar from "./ar";
 import en from "./en";
 import es from "./es";
 import id from "./id";
@@ -16,7 +17,7 @@ export { DEFAULT_LOCALE, localeHref };
 export { KIND_SPEC, KINDS, toToolPage } from "./kinds";
 export type * from "./types";
 
-export const LOCALES: readonly LocaleBundle[] = [en, es, id, pt];
+export const LOCALES: readonly LocaleBundle[] = [en, ar, es, id, pt];
 
 /** Registered locales other than English, in registry order. */
 export const EXTRA_LOCALES: readonly LocaleBundle[] = LOCALES.filter((l) => l.meta.code !== DEFAULT_LOCALE);
