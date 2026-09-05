@@ -8,14 +8,7 @@ import { SITE_DOMAIN } from "./site";
 export { OG_SIZE } from "./og-size";
 import { OG_SIZE } from "./og-size";
 
-// Fonts are bundled files, never fetched. Satori (next/og) would otherwise
-// download a fallback font for scripts the Latin font cannot cover, and its
-// parser fails on some of those files. Add one entry per non-Latin locale.
-// Vazirmatn (OFL 1.1) covers Arabic and Persian.
-const LATIN_FONT = { file: "SpaceGrotesk-Bold.woff", family: "Space Grotesk" };
-const LOCALE_FONTS: Record<string, { file: string; family: string }> = {
-  ar: { file: "Vazirmatn-Bold.ttf", family: "Vazirmatn" },
-};
+import { LATIN_FONT, LOCALE_FONTS } from "./og-fonts";
 
 const fontCache = new Map<string, Promise<ArrayBuffer>>();
 function loadFont(file: string): Promise<ArrayBuffer> {
