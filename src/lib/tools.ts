@@ -430,7 +430,7 @@ export const TOOLS: readonly ToolDef[] = [
   {
     slug: "jpg-to-pdf",
     kind: "images-to-pdf",
-    nav: true,
+    nav: false,
     name: "JPG to PDF",
     navLabel: "JPG to PDF",
     title: "JPG to PDF – Convert JPG Images to PDF Online, Free",
@@ -561,7 +561,7 @@ export const TOOLS: readonly ToolDef[] = [
   {
     slug: "image-to-pdf",
     kind: "images-to-pdf",
-    nav: false,
+    nav: true,
     name: "Image to PDF",
     navLabel: "Image to PDF",
     title: "Image to PDF – Convert JPG, PNG, WebP Images to PDF Free",
@@ -668,7 +668,7 @@ export const TOOLS: readonly ToolDef[] = [
   {
     slug: "pdf-to-jpg",
     kind: "pdf-to-images",
-    nav: true,
+    nav: false,
     name: "PDF to JPG",
     navLabel: "PDF to JPG",
     title: "PDF to JPG – Convert PDF Pages to JPG Images Online",
@@ -757,7 +757,7 @@ export const TOOLS: readonly ToolDef[] = [
   {
     slug: "pdf-to-image",
     kind: "pdf-to-images",
-    nav: false,
+    nav: true,
     name: "PDF to Image",
     navLabel: "PDF to Image",
     title: "PDF to Image – Convert PDF Pages to JPG or PNG Online",
