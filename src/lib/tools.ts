@@ -21,7 +21,8 @@ export type ToolKind =
   | "view"
   | "compress"
   | "unlock"
-  | "protect";
+  | "protect"
+  | "edit";
 
 export type ToolSlug =
   | "merge-pdf"
@@ -42,7 +43,9 @@ export type ToolSlug =
   | "compress-pdf"
   | "reduce-pdf-size"
   | "unlock-pdf"
-  | "protect-pdf";
+  | "protect-pdf"
+  | "edit-pdf"
+  | "sign-pdf";
 
 export type ToolIcon =
   | "Combine"
@@ -54,7 +57,8 @@ export type ToolIcon =
   | "BookOpen"
   | "FileDown"
   | "LockOpen"
-  | "Lock";
+  | "Lock"
+  | "PenLine";
 
 export interface ToolFaq {
   q: string;
@@ -90,7 +94,7 @@ export interface ToolDef {
   related: ToolSlug[];
   keywords: string[];
   /** Initial option values for the tool component. */
-  defaults?: { format?: "jpg" | "png"; pageSize?: "fit" | "a4" | "letter" };
+  defaults?: { format?: "jpg" | "png"; pageSize?: "fit" | "a4" | "letter"; tool?: "select" | "text" | "draw" };
   /** Show a "Take a photo" button that opens the phone camera (image tools only). */
   capture?: boolean;
 }
@@ -211,7 +215,7 @@ export const TOOLS: readonly ToolDef[] = [
     slug: "combine-pdf",
     kind: "merge",
     nav: false,
-    priority: 13, // Bing 369K
+    priority: 15, // Bing 369K
     name: "Combine PDF",
     navLabel: "Combine",
     title: "Combine PDF Files Online – Free PDF Combiner, No Upload",
@@ -269,7 +273,7 @@ export const TOOLS: readonly ToolDef[] = [
     slug: "split-pdf",
     kind: "split",
     nav: true,
-    priority: 5, // Bing 0.7M
+    priority: 6, // Bing 0.7M
     name: "Split PDF",
     navLabel: "Split",
     title: "Split PDF Online – Extract Pages or Split by Range",
@@ -327,7 +331,7 @@ export const TOOLS: readonly ToolDef[] = [
     slug: "extract-pdf-pages",
     kind: "split",
     nav: false,
-    priority: 17, // Bing 89K
+    priority: 19, // Bing 89K
     name: "Extract PDF Pages",
     navLabel: "Extract pages",
     title: "Extract Pages from PDF Online – Free PDF Splitter, No Upload",
@@ -385,7 +389,7 @@ export const TOOLS: readonly ToolDef[] = [
     slug: "rotate-pdf",
     kind: "rotate",
     nav: true,
-    priority: 9, // Bing under 40K
+    priority: 10, // Bing under 40K
     name: "Rotate PDF",
     navLabel: "Rotate",
     title: "Rotate PDF Pages Online – Fix Sideways Pages Free",
@@ -429,7 +433,7 @@ export const TOOLS: readonly ToolDef[] = [
     slug: "organize-pdf",
     kind: "organize",
     nav: true,
-    priority: 10, // Bing 38K
+    priority: 11, // Bing 38K
     name: "Organize PDF",
     navLabel: "Organize",
     title: "Organize PDF Pages – Reorder and Delete Pages Online",
@@ -475,7 +479,7 @@ export const TOOLS: readonly ToolDef[] = [
     slug: "jpg-to-pdf",
     kind: "images-to-pdf",
     nav: false,
-    priority: 11, // Bing 2.0M
+    priority: 12, // Bing 2.0M
     name: "JPG to PDF",
     navLabel: "JPG to PDF",
     title: "JPG to PDF – Convert JPG Images to PDF Online, Free",
@@ -527,7 +531,7 @@ export const TOOLS: readonly ToolDef[] = [
     slug: "png-to-pdf",
     kind: "images-to-pdf",
     nav: false,
-    priority: 14, // Bing 231K
+    priority: 16, // Bing 231K
     name: "PNG to PDF",
     navLabel: "PNG to PDF",
     title: "PNG to PDF – Convert PNG Images to PDF Online, Free",
@@ -568,7 +572,7 @@ export const TOOLS: readonly ToolDef[] = [
     slug: "webp-to-pdf",
     kind: "images-to-pdf",
     nav: false,
-    priority: 19, // Bing under 40K
+    priority: 21, // Bing under 40K
     name: "WebP to PDF",
     navLabel: "WebP to PDF",
     title: "WebP to PDF – Convert WebP Images to PDF Online, Free",
@@ -660,7 +664,7 @@ export const TOOLS: readonly ToolDef[] = [
     slug: "scan-to-pdf",
     kind: "images-to-pdf",
     nav: false,
-    priority: 18, // Bing 77K
+    priority: 20, // Bing 77K
     name: "Scan to PDF",
     navLabel: "Scan to PDF",
     title: "Scan Documents to PDF Online – Use Your Phone Camera, Free",
@@ -718,7 +722,7 @@ export const TOOLS: readonly ToolDef[] = [
     slug: "pdf-to-jpg",
     kind: "pdf-to-images",
     nav: false,
-    priority: 12, // Bing 1.5M
+    priority: 13, // Bing 1.5M
     name: "PDF to JPG",
     navLabel: "PDF to JPG",
     title: "PDF to JPG – Convert PDF Pages to JPG Images Online",
@@ -770,7 +774,7 @@ export const TOOLS: readonly ToolDef[] = [
     slug: "pdf-to-png",
     kind: "pdf-to-images",
     nav: false,
-    priority: 16, // Bing 169K
+    priority: 18, // Bing 169K
     name: "PDF to PNG",
     navLabel: "PDF to PNG",
     title: "PDF to PNG – Convert PDF Pages to PNG Images Online",
@@ -909,7 +913,7 @@ export const TOOLS: readonly ToolDef[] = [
     slug: "reduce-pdf-size",
     kind: "compress",
     nav: false,
-    priority: 15, // Bing 190K
+    priority: 17, // Bing 190K
     name: "Reduce PDF Size",
     navLabel: "Reduce size",
     title: "Reduce PDF File Size Online – Free PDF Size Reducer, No Upload",
@@ -968,7 +972,7 @@ export const TOOLS: readonly ToolDef[] = [
     slug: "unlock-pdf",
     kind: "unlock",
     nav: true,
-    priority: 7, // Bing 99K
+    priority: 8, // Bing 99K
     name: "Unlock PDF",
     navLabel: "Unlock",
     title: "Unlock PDF – Remove Password from PDF Online, Free, No Upload",
@@ -1024,7 +1028,7 @@ export const TOOLS: readonly ToolDef[] = [
     slug: "protect-pdf",
     kind: "protect",
     nav: true,
-    priority: 8, // Bing under 40K
+    priority: 9, // Bing under 40K
     name: "Protect PDF",
     navLabel: "Protect",
     title: "Protect PDF – Add a Password to a PDF Online, Free, No Upload",
@@ -1085,7 +1089,7 @@ export const TOOLS: readonly ToolDef[] = [
     slug: "pdf-viewer",
     kind: "view",
     nav: true,
-    priority: 6, // Bing 0.5M
+    priority: 7, // Bing 0.5M
     name: "PDF Viewer",
     navLabel: "View",
     title: "Open PDF File Online – Free PDF Viewer, No Upload",
@@ -1132,7 +1136,7 @@ export const TOOLS: readonly ToolDef[] = [
       },
       {
         q: "Can I edit the PDF here?",
-        a: "No. This tool only shows the file. To change the file, use the other tools on this site: rotate pages, reorder or delete pages, split, merge, or convert pages to images.",
+        a: "No. This tool only shows the file. To add text, whiteout, images, or a signature over a page, use the Edit PDF tool. To rotate, reorder, delete, split, merge, or convert pages, use the other tools on this site.",
       },
       LIMIT_FAQ,
       FREE_FAQ,
@@ -1147,6 +1151,134 @@ export const TOOLS: readonly ToolDef[] = [
       "read pdf without adobe",
       "open pdf online free",
     ],
+  },
+  {
+    slug: "edit-pdf",
+    kind: "edit",
+    nav: true,
+    priority: 5, // Bing 0.7M ("pdf editor" 719K, "pdf editor free" 445K, "edit pdf" 357K)
+    name: "Edit PDF",
+    navLabel: "Edit",
+    title: "Edit PDF Online – Add Text, Whiteout, Images, Free, No Upload",
+    description:
+      "Edit a PDF in your browser: add text, cover parts with whiteout, highlight, insert images, and draw a signature. Free, no upload, no account, no watermark.",
+    h1: "Edit a PDF",
+    intro:
+      "Add text, whiteout, highlights, images, and a drawn signature on top of the pages of a PDF. The tool does not change the text that is already in the file; it puts new content over it. Everything runs in your browser.",
+    icon: "PenLine",
+    accept: PDF_ACCEPT,
+    multiple: false,
+    input: "pdf",
+    output: "pdf",
+    actionLabel: "Save PDF",
+    steps: [
+      "Drop a PDF into the box, or click to choose it. Pick a page in the strip on the left.",
+      "Choose a tool in the toolbar. Click the page to add a text box, drag to draw a whiteout or a highlight, add an image, or draw with the pen. Drag an item to move it, pull its corner to resize it, and press Delete to remove it.",
+      "Click Save PDF. The edited file downloads at once.",
+    ],
+    faq: [
+      {
+        q: "What can I edit in a PDF with this tool?",
+        a: "You can put new content on top of any page: text boxes, white rectangles (whiteout), yellow highlights, images (PNG or JPG), and freehand lines drawn with the mouse or a finger. You can move, resize, and delete each item before you save. The original page content stays under it.",
+      },
+      {
+        q: "Can I change the text that is already in the PDF?",
+        a: "No. This tool does not edit the existing text. It adds new content over the page. To replace a word or a number, draw a whiteout rectangle over it and add a text box on top. The old text is covered on screen and on paper, but it stays in the file, so a program that copies text from the PDF can still find it.",
+      },
+      {
+        q: "How do I sign a PDF?",
+        a: "Choose the Draw tool and draw your signature on the page with the mouse, a pen, or your finger. Or choose Image and upload a photo of your signature as a PNG or JPG. Move the signature to the correct place, resize it, and click Save PDF. The Sign PDF page starts with the Draw tool selected.",
+      },
+      {
+        q: "Is my PDF uploaded to a server?",
+        a: "No. The file is opened by JavaScript on your own device. The edits are drawn into the file with the open-source pdf-lib library in your browser. Nothing is sent to us. You can turn off your internet connection after the page loads and the tool still works.",
+      },
+      {
+        q: "Which fonts can I use?",
+        a: "Helvetica, Times, and Courier. These are the standard PDF fonts, so the file stays small and every PDF viewer shows them without an embedded font file. You can set the size and the color of each text box.",
+      },
+      {
+        q: "Why is a special character shown as a question mark?",
+        a: "The standard PDF fonts contain the Latin characters of Western European languages (the WinAnsi set). A character outside that set, such as a Chinese character, an emoji, or some symbols, cannot be encoded, so the tool writes a question mark in its place. Type the text with characters from the Latin alphabet, or add it as an image.",
+      },
+      LIMIT_FAQ,
+      FREE_FAQ,
+    ],
+    related: ["sign-pdf", "organize-pdf", "pdf-viewer"],
+    keywords: [
+      "pdf editor",
+      "pdf editor free",
+      "edit pdf",
+      "edit pdf online",
+      "free pdf editor",
+      "online pdf editor",
+      "how to edit pdf free",
+      "add text to pdf",
+      "whiteout pdf",
+    ],
+  },
+  {
+    slug: "sign-pdf",
+    kind: "edit",
+    nav: false,
+    priority: 14, // Bing 0.3M
+    name: "Sign PDF",
+    navLabel: "Sign",
+    title: "Sign PDF Online – Draw or Upload Your Signature, Free, No Upload",
+    description:
+      "Sign a PDF in your browser. Draw your signature with the mouse or a finger, or upload an image of it, place it, and save. Free, no upload, no account.",
+    h1: "Sign a PDF",
+    intro:
+      "Draw your signature on the page, or upload an image of it. Move it to the correct place, resize it, and save the file. The PDF does not leave your device.",
+    icon: "PenLine",
+    accept: PDF_ACCEPT,
+    multiple: false,
+    input: "pdf",
+    output: "pdf",
+    actionLabel: "Save PDF",
+    steps: [
+      "Drop the PDF into the box, or click to choose it. Pick the page that needs the signature in the strip on the left.",
+      "The Draw tool is selected. Draw your signature on the page with the mouse, a pen, or your finger. Or click Image and upload a PNG or JPG of your signature. Drag it into place and pull the corner to resize it. Use the Text tool to add the date or your name.",
+      "Click Save PDF. The signed file downloads at once.",
+    ],
+    faq: [
+      {
+        q: "How do I sign a PDF without printing it?",
+        a: "Add the PDF and draw your signature on the page with the Draw tool. You can use the mouse, a pen, or your finger on a touch screen. Move and resize the signature, then click Save PDF. The signature becomes part of the page. No printer and no scanner are needed.",
+      },
+      {
+        q: "Can I use a picture of my signature?",
+        a: "Yes. Sign a white sheet of paper, take a photo or a scan, and save it as PNG or JPG. Click Image, choose the file, and place it on the page. A PNG with a transparent background looks best. The image is embedded in the PDF at its full quality.",
+      },
+      {
+        q: "Is this a legal electronic signature?",
+        a: "The tool draws a picture of your signature into the page. It does not add a digital certificate, and it does not check who signed. Many agreements accept a drawn signature, but the rules differ by country and by contract. If the other party needs a certificate-based signature, use a service that issues one.",
+      },
+      {
+        q: "Can I sign on my phone?",
+        a: "Yes. The page works in the browser of a phone or a tablet. Draw with your finger or a stylus. Pinch to zoom the browser if the field is small. The file stays on the phone.",
+      },
+      {
+        q: "Can I add the date next to the signature?",
+        a: "Yes. Choose the Text tool, click the page, and type the date. You can set the font size and the color. Drag the text box next to the signature.",
+      },
+      {
+        q: "Is my signed document uploaded?",
+        a: "No. The PDF and the signature stay in your browser. The signature is drawn into the file by JavaScript on your own device. Nothing is sent to us.",
+      },
+      LIMIT_FAQ,
+      FREE_FAQ,
+    ],
+    related: ["edit-pdf", "protect-pdf", "merge-pdf"],
+    keywords: [
+      "sign pdf",
+      "esign pdf free",
+      "add signature to pdf",
+      "pdf signature online",
+      "sign pdf online free",
+      "draw signature on pdf",
+    ],
+    defaults: { tool: "draw" },
   },
 ];
 

@@ -24,4 +24,5 @@ export const TOOL_COMPONENTS: Record<ToolKind, ComponentType<ToolProps>> = {
   compress: dynamic(() => import("./tools/compress-tool").then((m) => m.CompressTool), { ssr: false }),
   unlock: dynamic(() => import("./tools/unlock-tool").then((m) => m.UnlockTool), { ssr: false }),
   protect: dynamic(() => import("./tools/protect-tool").then((m) => m.ProtectTool), { ssr: false }),
+  edit: dynamic(() => import("./tools/edit-tool").then((m) => m.EditTool), { ssr: false }),
 };

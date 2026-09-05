@@ -70,7 +70,7 @@ describe("TOOLS registry", () => {
     expect(HEADER_LIMIT).toBe(5);
     expect(HEADER_TOOLS.length).toBeLessThanOrEqual(HEADER_LIMIT);
     expect(HEADER_TOOLS).toEqual(NAV_TOOLS.slice(0, HEADER_LIMIT));
-    expect(HEADER_TOOLS.map((t) => t.slug)).toEqual(["merge-pdf", "image-to-pdf", "pdf-to-image", "compress-pdf", "split-pdf"]);
+    expect(HEADER_TOOLS.map((t) => t.slug)).toEqual(["merge-pdf", "image-to-pdf", "pdf-to-image", "compress-pdf", "edit-pdf"]);
     // Labels must stay short so five of them fit next to the logo at 1024 px.
     expect(HEADER_TOOLS.every((t) => t.navLabel.length <= 14)).toBe(true);
   });
@@ -142,6 +142,27 @@ describe("TOOLS registry", () => {
     expect(NAV_TOOLS.some((t) => t.slug === "pdf-viewer")).toBe(true);
     expect(viewer!.keywords).toEqual(expect.arrayContaining(["open pdf file", "pdf viewer", "pdf reader online"]));
     expect(viewer!.faq.some((f) => /what is a pdf reader/i.test(f.q))).toBe(true);
+  });
+
+  it("registers edit as a nav tool with a sign-pdf variant that starts with the Draw tool", () => {
+    const edit = getTool("edit-pdf");
+    expect(edit).toMatchObject({ kind: "edit", nav: true, input: "pdf", output: "pdf", icon: "PenLine", actionLabel: "Save PDF" });
+    expect(edit!.keywords).toEqual(expect.arrayContaining(["pdf editor", "pdf editor free", "edit pdf", "edit pdf online", "free pdf editor"]));
+    expect(edit!.faq.some((f) => /change the text that is already/i.test(f.q))).toBe(true);
+    expect(edit!.faq.some((f) => /question mark/i.test(f.q))).toBe(true);
+    expect(edit!.faq.some((f) => /how do i sign/i.test(f.q))).toBe(true);
+    expect(edit!.defaults?.tool).toBeUndefined();
+    expect(edit!.related).toContain("sign-pdf");
+
+    const sign = getTool("sign-pdf");
+    expect(sign).toMatchObject({ kind: "edit", nav: false, input: "pdf", output: "pdf", icon: "PenLine", actionLabel: "Save PDF" });
+    expect(sign!.defaults?.tool).toBe("draw");
+    expect(sign!.keywords).toEqual(expect.arrayContaining(["sign pdf", "esign pdf free", "add signature to pdf", "pdf signature online"]));
+    expect(sign!.related).toContain("edit-pdf");
+    expect(VARIANT_TOOLS.map((t) => t.slug)).toContain("sign-pdf");
+    for (const tool of TOOLS.filter((t) => t.kind !== "edit")) {
+      expect(tool.defaults?.tool, tool.slug).toBeUndefined();
+    }
   });
 
   it("gives every tool with an output a download-style action label", () => {
