@@ -96,6 +96,23 @@ describe("TOOLS registry", () => {
     }
   });
 
+  it("registers unlock and protect as nav tools that link to each other", () => {
+    const unlock = getTool("unlock-pdf");
+    expect(unlock).toMatchObject({ kind: "unlock", nav: true, input: "pdf", output: "pdf", icon: "LockOpen", actionLabel: "Unlock PDF" });
+    expect(unlock!.keywords).toEqual(
+      expect.arrayContaining(["unlock pdf", "remove password from pdf", "pdf password remover", "decrypt pdf"]),
+    );
+    expect(unlock!.faq.some((f) => /forgot the password/i.test(f.q))).toBe(true);
+    expect(unlock!.related).toContain("protect-pdf");
+
+    const protect = getTool("protect-pdf");
+    expect(protect).toMatchObject({ kind: "protect", nav: true, input: "pdf", output: "pdf", icon: "Lock", actionLabel: "Protect PDF" });
+    expect(protect!.keywords).toEqual(expect.arrayContaining(["protect pdf", "password protect pdf", "encrypt pdf", "lock pdf"]));
+    expect(protect!.faq.some((f) => /AES-256/.test(f.a))).toBe(true);
+    expect(protect!.faq.some((f) => /remove the password later/i.test(f.q))).toBe(true);
+    expect(protect!.related).toContain("unlock-pdf");
+  });
+
   it("registers the viewer as a nav tool with no output", () => {
     const viewer = getTool("pdf-viewer");
     expect(viewer).toMatchObject({ kind: "view", nav: true, input: "pdf", output: "none", icon: "BookOpen" });

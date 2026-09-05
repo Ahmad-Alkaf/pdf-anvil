@@ -61,7 +61,7 @@ export default function HomePage() {
         </div>
         <h1 className="animate-fade-in-up mt-6 text-4xl font-bold sm:text-5xl lg:text-6xl">{SITE_TAGLINE}</h1>
         <p className="animate-fade-in-up mx-auto mt-5 max-w-2xl text-lg text-muted-foreground [animation-delay:80ms]">
-          Merge, split, rotate, organize, and convert PDFs. No upload, no account, no limits. Your files never leave
+          Merge, split, rotate, organize, convert, and protect PDFs. No upload, no account, no limits. Your files never leave
           your device.
         </p>
         <ul className="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-muted-foreground">

@@ -1,5 +1,7 @@
 export type PdfErrorCode =
   | "encrypted"
+  | "wrong-password"
+  | "not-encrypted"
   | "not-pdf"
   | "corrupt"
   | "too-large"
@@ -9,8 +11,9 @@ export type PdfErrorCode =
   | "unknown";
 
 const MESSAGES: Record<PdfErrorCode, string> = {
-  encrypted:
-    "This PDF is password-protected. Remove the password in your PDF viewer first, then try again.",
+  encrypted: "This PDF is password-protected. Remove the password with the Unlock PDF tool first, then try again.",
+  "wrong-password": "The password is not correct. Check it and try again.",
+  "not-encrypted": "This PDF has no password. There is nothing to remove.",
   "not-pdf": "This file is not a valid PDF.",
   corrupt: "This PDF is damaged and cannot be read.",
   "too-large": "This page is too large to render at the selected quality. Try a lower DPI.",

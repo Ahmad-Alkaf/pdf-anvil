@@ -10,6 +10,12 @@ describe("PdfError", () => {
     expect(err.message).toMatch(/password-protected/);
   });
 
+  it("has a clear message for password problems", () => {
+    expect(new PdfError("wrong-password").message).toMatch(/password is not correct/i);
+    expect(new PdfError("not-encrypted").message).toMatch(/no password/i);
+    expect(new PdfError("encrypted").message).toMatch(/Unlock PDF/);
+  });
+
   it("appends the detail in parentheses", () => {
     expect(new PdfError("bad-range", "pages start at 1").message).toBe(
       "The page range is not valid. (pages start at 1)",

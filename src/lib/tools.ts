@@ -11,7 +11,17 @@
 
 import { IMAGE_ACCEPT, PDF_ACCEPT } from "./files";
 
-export type ToolKind = "merge" | "split" | "rotate" | "organize" | "images-to-pdf" | "pdf-to-images" | "view" | "compress";
+export type ToolKind =
+  | "merge"
+  | "split"
+  | "rotate"
+  | "organize"
+  | "images-to-pdf"
+  | "pdf-to-images"
+  | "view"
+  | "compress"
+  | "unlock"
+  | "protect";
 
 export type ToolSlug =
   | "merge-pdf"
@@ -30,9 +40,21 @@ export type ToolSlug =
   | "pdf-to-image"
   | "pdf-viewer"
   | "compress-pdf"
-  | "reduce-pdf-size";
+  | "reduce-pdf-size"
+  | "unlock-pdf"
+  | "protect-pdf";
 
-export type ToolIcon = "Combine" | "Scissors" | "RotateCw" | "LayoutGrid" | "ImagePlus" | "Images" | "BookOpen" | "FileDown";
+export type ToolIcon =
+  | "Combine"
+  | "Scissors"
+  | "RotateCw"
+  | "LayoutGrid"
+  | "ImagePlus"
+  | "Images"
+  | "BookOpen"
+  | "FileDown"
+  | "LockOpen"
+  | "Lock";
 
 export interface ToolFaq {
   q: string;
@@ -114,6 +136,16 @@ const SELECT_PAGES_FAQ: ToolFaq = {
   a: "Yes. After the file loads, click the pages you want in the grid. Only the selected pages are converted.",
 };
 
+const PASSWORD_PRIVACY_FAQ: ToolFaq = {
+  q: "Is my PDF or my password uploaded?",
+  a: "No. The file and the password stay in your browser. The tool runs the open-source qpdf program as WebAssembly on your own device. No request carries your file or your password. You can turn off your internet connection after the page loads and the tool still works.",
+};
+
+const TWO_PASSWORDS_FAQ: ToolFaq = {
+  q: "What is the difference between the user password and the owner password?",
+  a: "A PDF can have two passwords. The user password opens the file. The owner password gives full access and removes the limits on printing, copying, and editing. A PDF viewer applies the permissions only to a person who opens the file with the user password.",
+};
+
 export const TOOLS: readonly ToolDef[] = [
   {
     slug: "merge-pdf",
@@ -149,7 +181,7 @@ export const TOOLS: readonly ToolDef[] = [
       },
       {
         q: "Can I merge password-protected PDFs?",
-        a: "Not yet. Remove the password in your PDF viewer first (open the file, enter the password, then print or save it as a new PDF), and merge that copy.",
+        a: "Not directly. Remove the password with the Unlock PDF tool first, then merge that copy. You need the password of the file.",
       },
       PRIVACY_FAQ,
       LIMIT_FAQ,
@@ -907,6 +939,121 @@ export const TOOLS: readonly ToolDef[] = [
       "make pdf smaller",
       "pdf reducer",
       "reduce pdf size online free",
+    ],
+  },
+  // ---- passwords: qpdf compiled to WebAssembly ----
+  {
+    slug: "unlock-pdf",
+    kind: "unlock",
+    nav: true,
+    name: "Unlock PDF",
+    navLabel: "Unlock",
+    title: "Unlock PDF – Remove Password from PDF Online, Free, No Upload",
+    description:
+      "Remove the password from a PDF when you know it. Type the password, click once, and get a copy that opens with no password. Free, in your browser, no upload.",
+    h1: "Unlock a PDF",
+    intro:
+      "Remove the password from a PDF. Type the password you know, click once, and download a copy that opens with no password. The file stays on your device.",
+    icon: "LockOpen",
+    accept: PDF_ACCEPT,
+    multiple: false,
+    input: "pdf",
+    output: "pdf",
+    actionLabel: "Unlock PDF",
+    steps: [
+      "Drop a password-protected PDF into the box, or click to choose it.",
+      "Type the password of the file. The password that opens the file or the owner password both work.",
+      "Click Unlock PDF. A copy with no password and no limits downloads at once.",
+    ],
+    faq: [
+      {
+        q: "I forgot the password. Can you remove it?",
+        a: "No. The tool needs the password. It does not guess, crack, or bypass passwords. A PDF with AES encryption cannot be opened without the correct password. If you do not know it, ask the person who made the file.",
+      },
+      PASSWORD_PRIVACY_FAQ,
+      TWO_PASSWORDS_FAQ,
+      {
+        q: "Which password do I type here?",
+        a: "Either one. If you know only the password that opens the file, type that one. If you know the owner password, type that one. The result has no password and no limits.",
+      },
+      {
+        q: "Why does my PDF not open here?",
+        a: "Three causes are common. The password is not correct: check for capital letters and spaces, and try again. The file is damaged: open it in a PDF viewer to check. The file uses a certificate or a digital rights system instead of a password: the tool cannot open those files.",
+      },
+      {
+        q: "Can I remove only the limits and keep the open password?",
+        a: "No. The result has no password at all. To set a new password, open the result in the Protect PDF tool.",
+      },
+      LIMIT_FAQ,
+      FREE_FAQ,
+    ],
+    related: ["protect-pdf", "merge-pdf", "compress-pdf"],
+    keywords: [
+      "unlock pdf",
+      "remove password from pdf",
+      "pdf password remover",
+      "decrypt pdf",
+      "remove pdf password",
+      "unlock pdf online free",
+    ],
+  },
+  {
+    slug: "protect-pdf",
+    kind: "protect",
+    nav: true,
+    name: "Protect PDF",
+    navLabel: "Protect",
+    title: "Protect PDF – Add a Password to a PDF Online, Free, No Upload",
+    description:
+      "Add a password to a PDF with AES-256 encryption in your browser. Set who can print, copy, or edit the file. Free, no upload, no account, no watermark.",
+    h1: "Protect a PDF with a password",
+    intro:
+      "Add a password to a PDF. The file is encrypted with AES-256 in your browser, and only a person with the password can open it. Nothing is uploaded.",
+    icon: "Lock",
+    accept: PDF_ACCEPT,
+    multiple: false,
+    input: "pdf",
+    output: "pdf",
+    actionLabel: "Protect PDF",
+    steps: [
+      "Drop a PDF into the box, or click to choose it.",
+      "Type the password that opens the file. Set an owner password and the permissions if you need them.",
+      "Click Protect PDF. The encrypted file downloads at once.",
+    ],
+    faq: [
+      {
+        q: "Which encryption does the tool use?",
+        a: "AES-256, the strongest encryption in the PDF standard (PDF 2.0). Every current PDF viewer opens it: Adobe Reader, Chrome, Edge, Firefox, Safari, and Preview on a Mac.",
+      },
+      TWO_PASSWORDS_FAQ,
+      {
+        q: "What happens if I leave the owner password empty?",
+        a: "The tool uses the password that opens the file for both. Then the permissions do not limit a person who knows that password. Set a different owner password when the permissions must apply.",
+      },
+      {
+        q: "What do the permissions do?",
+        a: "They tell a PDF viewer what a person with the user password may do: print the file, copy text and images, and edit the file. A person with the owner password can do everything. Most viewers obey the permissions, but they are a signal, not a lock. The password is the real protection.",
+      },
+      {
+        q: "Can I remove the password later?",
+        a: "Yes. Open the file in the Unlock PDF tool and type the password. You get a copy with no password. Keep the password in a safe place. Without it, the file cannot be opened.",
+      },
+      PASSWORD_PRIVACY_FAQ,
+      {
+        q: "How long should the password be?",
+        a: "Use at least 12 characters with letters, digits, and symbols. AES-256 is strong, but a program can guess a short password. Do not send the password in the same email as the file.",
+      },
+      LIMIT_FAQ,
+      FREE_FAQ,
+    ],
+    related: ["unlock-pdf", "compress-pdf", "merge-pdf"],
+    keywords: [
+      "protect pdf",
+      "password protect pdf",
+      "encrypt pdf",
+      "lock pdf",
+      "add password to pdf",
+      "protect pdf online free",
     ],
   },
   // ---- viewer: shows the file, makes no output ----

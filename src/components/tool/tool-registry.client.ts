@@ -22,4 +22,6 @@ export const TOOL_COMPONENTS: Record<ToolKind, ComponentType<ToolProps>> = {
   "pdf-to-images": dynamic(() => import("./tools/pdf-to-images-tool").then((m) => m.PdfToImagesTool), { ssr: false }),
   view: dynamic(() => import("./tools/view-tool").then((m) => m.ViewTool), { ssr: false }),
   compress: dynamic(() => import("./tools/compress-tool").then((m) => m.CompressTool), { ssr: false }),
+  unlock: dynamic(() => import("./tools/unlock-tool").then((m) => m.UnlockTool), { ssr: false }),
+  protect: dynamic(() => import("./tools/protect-tool").then((m) => m.ProtectTool), { ssr: false }),
 };
