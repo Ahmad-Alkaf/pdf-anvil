@@ -8,6 +8,7 @@ import { KIND_SPEC, KINDS } from "./kinds";
 import { DEFAULT_LOCALE, localeHref } from "./href";
 import en from "./en";
 import es from "./es";
+import id from "./id";
 import pt from "./pt";
 import type { Locale, LocaleBundle, LocalePage } from "./types";
 
@@ -15,7 +16,7 @@ export { DEFAULT_LOCALE, localeHref };
 export { KIND_SPEC, KINDS, toToolPage } from "./kinds";
 export type * from "./types";
 
-export const LOCALES: readonly LocaleBundle[] = [en, es, pt];
+export const LOCALES: readonly LocaleBundle[] = [en, es, id, pt];
 
 /** Registered locales other than English, in registry order. */
 export const EXTRA_LOCALES: readonly LocaleBundle[] = LOCALES.filter((l) => l.meta.code !== DEFAULT_LOCALE);
