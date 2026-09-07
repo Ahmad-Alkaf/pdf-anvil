@@ -103,6 +103,7 @@ export const messages: Messages = {
     privacy: {
       heading: "Mô hình riêng tư này bảo vệ điều gì",
       p: "Xử lý ngay trên trình duyệt loại bỏ một rủi ro phổ biến: gửi tài liệu đến máy chủ chuyển đổi của bên thứ ba. File bạn chọn không được gửi đến máy chủ xử lý nào, nên PDF Anvil không có bản sao trên máy chủ, không lưu trữ, và không truy cập được nội dung tài liệu trong lúc xử lý.",
+      sourceLink: "Xem mã nguồn trên GitHub",
     },
     limits: {
       heading: "File được hỗ trợ và giới hạn",

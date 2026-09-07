@@ -106,6 +106,7 @@ export const messages: Messages = {
     privacy: {
       heading: "Was dieses Datenschutzmodell schützt",
       p: "Die Verarbeitung im Browser beseitigt ein verbreitetes Risiko: ein Dokument an einen fremden Konvertierungsserver zu schicken. Ihre ausgewählten Dateien gehen an keinen Server. PDF Anvil hat darum keine Kopie der Datei, speichert nichts und hat während der Verarbeitung keinen Zugriff auf den Inhalt des Dokuments.",
+      sourceLink: "Quellcode auf GitHub ansehen",
     },
     limits: {
       heading: "Unterstützte Dateien und Grenzen",

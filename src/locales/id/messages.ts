@@ -102,6 +102,7 @@ export const messages: Messages = {
     privacy: {
       heading: "Apa yang dilindungi model privasi ini",
       p: "Pemrosesan di browser menghilangkan satu risiko umum: mengirim dokumen ke server konversi pihak ketiga. File yang Anda pilih tidak dikirim ke server pemrosesan, jadi PDF Anvil tidak memiliki salinan di server, tidak menyimpan file, dan tidak bisa mengakses isi dokumen selama pemrosesan.",
+      sourceLink: "Lihat kode sumber di GitHub",
     },
     limits: {
       heading: "File yang didukung dan batasannya",

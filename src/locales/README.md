@@ -130,7 +130,7 @@ List, with one line each:
 
 ## Checks
 
-Run these from the `pdfanvil` folder and fix every failure:
+Run these from the `pdf-anvil` folder and fix every failure:
 
 ```
 npm run typecheck

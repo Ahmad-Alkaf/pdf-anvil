@@ -104,6 +104,7 @@ export const messages: Messages = {
     privacy: {
       heading: "Qué protege este modelo de privacidad",
       p: "Procesar en el navegador elimina un riesgo habitual: enviar un documento a un servidor de conversión de terceros. Los archivos que seleccionas no se envían a ningún servidor de procesamiento, así que PDF Anvil no tiene copia en un servidor, ni retención, ni acceso al contenido del documento durante el procesamiento.",
+      sourceLink: "Ver el código fuente en GitHub",
     },
     limits: {
       heading: "Archivos compatibles y límites",

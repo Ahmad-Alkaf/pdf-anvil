@@ -1,6 +1,12 @@
 import Link from "next/link";
 import { JsonLd } from "@/components/seo/json-ld";
-import { KAFLABS_PRIVACY_URL, KAFLABS_TERMS_URL, KAFLABS_URL, SUPPORT_EMAIL } from "@/lib/site";
+import {
+  GITHUB_REPOSITORY_URL,
+  KAFLABS_PRIVACY_URL,
+  KAFLABS_TERMS_URL,
+  KAFLABS_URL,
+  SUPPORT_EMAIL,
+} from "@/lib/site";
 import { aboutJsonLd } from "@/lib/seo";
 import { getLocaleBundle, localeHref, type Locale } from "@/locales";
 import { formatJsx } from "@/locales/format";
@@ -38,6 +44,11 @@ export function AboutPage({ locale }: { locale: Locale }) {
           {m.privacy.heading}
         </h2>
         <p className="leading-relaxed text-muted-foreground">{m.privacy.p}</p>
+        <p>
+          <a className={linkClass} href={GITHUB_REPOSITORY_URL}>
+            {m.privacy.sourceLink}
+          </a>
+        </p>
       </section>
 
       <section className="mt-12" aria-labelledby="limits">

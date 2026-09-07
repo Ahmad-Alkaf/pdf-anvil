@@ -168,7 +168,7 @@ export interface Messages {
     /** `{kaflabs}` is the KafLabs link. */
     intro: string;
     files: { heading: string; p1: string; p2: string };
-    privacy: { heading: string; p: string };
+    privacy: { heading: string; p: string; sourceLink: string };
     limits: { heading: string; items: [string, string, string, string, string] };
     contact: {
       heading: string;

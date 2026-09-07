@@ -104,6 +104,7 @@ export const messages: Messages = {
     privacy: {
       heading: "What this privacy model protects",
       p: "Browser-based processing removes a common risk: sending a document to a third-party conversion server. Your selected files are not sent to a processing server, so PDF Anvil has no server-side file copy, retention, or access to the document contents during processing.",
+      sourceLink: "View the source code on GitHub",
     },
     limits: {
       heading: "Supported files and limits",
