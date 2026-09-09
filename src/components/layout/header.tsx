@@ -131,7 +131,7 @@ export function Header({ links }: { links: readonly LocaleLink[] }) {
               {allOpen && (
                 <div
                   id={allPanelId}
-                  className="absolute end-0 top-full mt-2 w-[34rem] max-w-[calc(100vw-2rem)] rounded-xl border bg-card p-3 text-card-foreground shadow-lg"
+                  className="absolute inset-e-0 top-full mt-2 w-136 max-w-[calc(100vw-2rem)] rounded-xl border bg-card p-3 text-card-foreground shadow-lg"
                 >
                   <ul className="grid grid-cols-2 gap-1">
                     {navTools.map((tool) => {
@@ -200,7 +200,7 @@ export function Header({ links }: { links: readonly LocaleLink[] }) {
                 <nav
                   id={langPanelId}
                   aria-label={m.language}
-                  className="absolute end-0 top-full mt-2 w-56 rounded-xl border bg-card p-2 text-card-foreground shadow-lg"
+                  className="absolute inset-e-0 top-full mt-2 w-56 rounded-xl border bg-card p-2 text-card-foreground shadow-lg"
                 >
                   <ul className="grid gap-0.5">
                     {links.map((l) => {
