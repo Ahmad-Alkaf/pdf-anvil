@@ -39,6 +39,7 @@ export const messages: Messages = {
     suggestionDismiss: "Schließen",
   },
   footer: {
+    source: "Quellcode",
     blurb: "Kostenlose PDF-Tools, die in Ihrem Browser laufen. Kein Upload, kein Konto, keine Limits.",
     byline: "Ein Produkt von {brand}",
     tools: "Tools",
@@ -93,6 +94,7 @@ export const messages: Messages = {
     ],
   },
   about: {
+    byline: "Entwickelt und gepflegt von {author}.",
     metaTitle: "Über PDF Anvil",
     metaDescription: "Erfahren Sie, wer PDF Anvil macht, wie die privaten PDF-Tools funktionieren und wo die Grenzen der Dateiverarbeitung im Browser liegen.",
     h1: "Über PDF Anvil",

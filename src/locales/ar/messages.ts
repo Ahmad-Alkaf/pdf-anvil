@@ -38,6 +38,7 @@ export const messages: Messages = {
     suggestionDismiss: "إغلاق",
   },
   footer: {
+    source: "الكود المصدري",
     blurb: "أدوات PDF مجانية تعمل في متصفحك. بدون رفع، بدون حساب، بدون حدود.",
     byline: "منتج من {brand}",
     tools: "الأدوات",
@@ -92,6 +93,7 @@ export const messages: Messages = {
     ],
   },
   about: {
+    byline: "طوّره ويتولى صيانته {author}.",
     metaTitle: "حول PDF Anvil",
     metaDescription: "تعرّف على من يصنع PDF Anvil، وكيف تعمل أدواته الخاصة لمعالجة PDF، وحدود معالجة الملفات داخل المتصفح.",
     h1: "حول PDF Anvil",

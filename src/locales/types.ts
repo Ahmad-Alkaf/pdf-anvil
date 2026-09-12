@@ -140,6 +140,7 @@ export interface Messages {
     suggestionDismiss: string;
   };
   footer: {
+    source: string;
     blurb: string;
     /** `{brand}` is the KafLabs link. */
     byline: string;
@@ -162,6 +163,8 @@ export interface Messages {
     faq: ToolFaq[];
   };
   about: {
+    /** `{author}` is the developer's profile link. */
+    byline: string;
     metaTitle: string;
     metaDescription: string;
     h1: string;

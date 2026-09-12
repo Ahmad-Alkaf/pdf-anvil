@@ -12,6 +12,7 @@ export const KAFLABS_URL = "https://kaflabs.com";
 export const KAFLABS_PRIVACY_URL = "https://kaflabs.com/privacy";
 export const KAFLABS_TERMS_URL = "https://kaflabs.com/terms";
 export const GITHUB_REPOSITORY_URL = "https://github.com/Ahmad-Alkaf/pdf-anvil";
+export const GITHUB_PROFILE_URL = "https://github.com/Ahmad-Alkaf";
 export const SUPPORT_EMAIL = "support@kaflabs.com";
 
 export const UMAMI_SRC = process.env.NEXT_PUBLIC_UMAMI_SRC || "";

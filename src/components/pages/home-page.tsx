@@ -7,6 +7,7 @@ import { Faq } from "@/components/seo/faq";
 import { homeJsonLd } from "@/lib/seo";
 import { KIND_SPEC, getLocaleBundle, localeHref, navPages, variantPages, type Locale } from "@/locales";
 import { firstSentence } from "@/locales/format";
+import { GITHUB_REPOSITORY_URL } from "@/lib/site";
 
 const TRUST_ICONS = [Lock, InfinityIcon, Gift] as const;
 
@@ -36,6 +37,12 @@ export function HomePage({ locale }: { locale: Locale }) {
             );
           })}
         </ul>
+        <a
+          href={GITHUB_REPOSITORY_URL}
+          className="mt-4 inline-flex min-h-11 items-center rounded-sm text-sm font-medium text-primary underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-4"
+        >
+          {messages.about.privacy.sourceLink}
+        </a>
       </section>
 
       <section aria-labelledby="tools-heading">

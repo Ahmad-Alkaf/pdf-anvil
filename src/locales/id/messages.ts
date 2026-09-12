@@ -35,6 +35,7 @@ export const messages: Messages = {
     suggestionDismiss: "Tutup",
   },
   footer: {
+    source: "Kode sumber",
     blurb: "Alat PDF gratis yang berjalan di browser Anda. Tanpa unggah, tanpa akun, tanpa batas.",
     byline: "Produk dari {brand}",
     tools: "Alat",
@@ -89,6 +90,7 @@ export const messages: Messages = {
     ],
   },
   about: {
+    byline: "Dibuat dan dipelihara oleh {author}.",
     metaTitle: "Tentang PDF Anvil",
     metaDescription: "Kenali siapa yang membuat PDF Anvil, cara kerja alat PDF privatnya, dan batasan pemrosesan file di browser.",
     h1: "Tentang PDF Anvil",

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { JsonLd } from "@/components/seo/json-ld";
 import {
   GITHUB_REPOSITORY_URL,
+  GITHUB_PROFILE_URL,
   KAFLABS_PRIVACY_URL,
   KAFLABS_TERMS_URL,
   KAFLABS_URL,
@@ -27,6 +28,11 @@ export function AboutPage({ locale }: { locale: Locale }) {
                 KafLabs
               </a>
             ),
+          })}
+        </p>
+        <p className="mt-4 leading-relaxed text-muted-foreground">
+          {formatJsx(m.byline, {
+            author: <a className={linkClass} href={GITHUB_PROFILE_URL}><bdi>Ahmad Alkaf</bdi></a>,
           })}
         </p>
       </header>

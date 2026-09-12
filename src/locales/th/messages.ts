@@ -40,6 +40,7 @@ export const messages: Messages = {
     suggestionDismiss: "ปิด",
   },
   footer: {
+    source: "ซอร์สโค้ด",
     blurb: "เครื่องมือ PDF ฟรี ทำงานในเบราว์เซอร์ของคุณ ไม่ต้องอัปโหลด ไม่ต้องสมัคร ไม่จำกัด",
     byline: "ผลิตภัณฑ์จาก {brand}",
     tools: "เครื่องมือ",
@@ -94,6 +95,7 @@ export const messages: Messages = {
     ],
   },
   about: {
+    byline: "พัฒนาและดูแลโดย {author}",
     metaTitle: "เกี่ยวกับ PDF Anvil",
     metaDescription: "ทำความรู้จักผู้สร้าง PDF Anvil วิธีการทำงานของเครื่องมือ PDF ที่เป็นส่วนตัว และข้อจำกัดของการประมวลผลไฟล์ในเบราว์เซอร์",
     h1: "เกี่ยวกับ PDF Anvil",

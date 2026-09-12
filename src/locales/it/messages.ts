@@ -38,6 +38,7 @@ export const messages: Messages = {
     suggestionDismiss: "Chiudi",
   },
   footer: {
+    source: "Codice sorgente",
     blurb: "Strumenti PDF gratis che funzionano nel tuo browser. Nessun caricamento, nessun account, nessun limite.",
     byline: "Un prodotto di {brand}",
     tools: "Strumenti",
@@ -92,6 +93,7 @@ export const messages: Messages = {
     ],
   },
   about: {
+    byline: "Creato e mantenuto da {author}.",
     metaTitle: "Informazioni su PDF Anvil",
     metaDescription: "Scopri chi fa PDF Anvil, come funzionano i suoi strumenti PDF privati e quali sono i limiti dell'elaborazione dei file nel browser.",
     h1: "Informazioni su PDF Anvil",

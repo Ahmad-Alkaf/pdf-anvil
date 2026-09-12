@@ -36,6 +36,7 @@ export const messages: Messages = {
     suggestionDismiss: "Đóng",
   },
   footer: {
+    source: "Mã nguồn",
     blurb: "Công cụ PDF miễn phí chạy ngay trên trình duyệt. Không tải lên, không tài khoản, không giới hạn.",
     byline: "Một sản phẩm của {brand}",
     tools: "Công cụ",
@@ -90,6 +91,7 @@ export const messages: Messages = {
     ],
   },
   about: {
+    byline: "Được xây dựng và duy trì bởi {author}.",
     metaTitle: "Giới thiệu PDF Anvil",
     metaDescription: "Tìm hiểu ai làm ra PDF Anvil, các công cụ PDF riêng tư này hoạt động ra sao, và giới hạn của việc xử lý file ngay trên trình duyệt.",
     h1: "Giới thiệu PDF Anvil",

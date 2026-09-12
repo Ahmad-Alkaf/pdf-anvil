@@ -39,6 +39,7 @@ export const messages: Messages = {
     suggestionDismiss: "閉じる",
   },
   footer: {
+    source: "ソースコード",
     blurb: "ブラウザで動く無料のPDFツール。アップロード不要、アカウント不要、制限なし。",
     byline: "{brand}の製品",
     tools: "ツール",
@@ -93,6 +94,7 @@ export const messages: Messages = {
     ],
   },
   about: {
+    byline: "{author} が開発・保守しています。",
     metaTitle: "PDF Anvilについて",
     metaDescription: "PDF Anvilの開発元、プライベートなPDFツールの仕組み、ブラウザ内でファイルを処理する際の制限について説明します。",
     h1: "PDF Anvilについて",

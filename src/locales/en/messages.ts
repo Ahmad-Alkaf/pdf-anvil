@@ -37,6 +37,7 @@ export const messages: Messages = {
     suggestionDismiss: "Dismiss",
   },
   footer: {
+    source: "Source code",
     blurb: "Free PDF tools that run in your browser. No upload, no account, no limits.",
     byline: "A {brand} product",
     tools: "Tools",
@@ -91,6 +92,7 @@ export const messages: Messages = {
     ],
   },
   about: {
+    byline: "Built and maintained by {author}.",
     metaTitle: "About PDF Anvil",
     metaDescription: "Learn who makes PDF Anvil, how its private PDF tools work, and the limits of browser-based file processing.",
     h1: "About PDF Anvil",

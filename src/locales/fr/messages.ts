@@ -40,6 +40,7 @@ export const messages: Messages = {
     suggestionDismiss: "Fermer",
   },
   footer: {
+    source: "Code source",
     blurb: "Outils PDF gratuits qui fonctionnent dans votre navigateur. Sans téléversement, sans compte, sans limite.",
     byline: "Un produit {brand}",
     tools: "Outils",
@@ -94,6 +95,7 @@ export const messages: Messages = {
     ],
   },
   about: {
+    byline: "Créé et maintenu par {author}.",
     metaTitle: "À propos de PDF Anvil",
     metaDescription: "Découvrez qui fait PDF Anvil, comment ses outils PDF privés fonctionnent et quelles sont les limites du traitement de fichiers dans le navigateur.",
     h1: "À propos de PDF Anvil",

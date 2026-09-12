@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Logo } from "@/components/logo";
-import { KAFLABS_PRIVACY_URL, KAFLABS_TERMS_URL, KAFLABS_URL, SUPPORT_EMAIL } from "@/lib/site";
+import { GITHUB_REPOSITORY_URL, KAFLABS_PRIVACY_URL, KAFLABS_TERMS_URL, KAFLABS_URL, SUPPORT_EMAIL } from "@/lib/site";
 import { getLocaleBundle, localeHref, pagesByPriority, type Locale, type LocaleLink } from "@/locales";
 import { formatJsx } from "@/locales/format";
 
@@ -79,7 +79,10 @@ export function Footer({ locale, links }: { locale: Locale; links: readonly Loca
           <span className="text-xs text-muted-foreground">
             {formatJsx(m.copyright, { year: new Date().getFullYear(), brand: brandPlain })}
           </span>
-          <div className="flex gap-4">
+          <div className="flex flex-wrap justify-center gap-x-4 gap-y-2">
+            <a href={GITHUB_REPOSITORY_URL} className="text-xs text-muted-foreground transition-colors hover:text-foreground">
+              {m.source}
+            </a>
             <Link href={localeHref(locale, "about")} className="text-xs text-muted-foreground transition-colors hover:text-foreground">
               {m.about}
             </Link>
