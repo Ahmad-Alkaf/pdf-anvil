@@ -28,7 +28,19 @@ export const SITE_VIEWPORT: Viewport = {
   colorScheme: "light dark",
 };
 
-const PUBLISHER = { "@type": "Organization", name: "KafLabs", url: KAFLABS_URL };
+const PUBLISHER = {
+  "@type": "Organization",
+  "@id": `${SITE_URL}/#organization`,
+  name: SITE_NAME,
+  url: SITE_URL,
+  logo: `${SITE_URL}/icons/icon-512.png`,
+  parentOrganization: {
+    "@type": "Organization",
+    "@id": `${KAFLABS_URL}/#organization`,
+    name: "KafLabs",
+    url: KAFLABS_URL,
+  },
+};
 
 // ---- Open Graph images ------------------------------------------------------
 // Rendered by src/app/og/[[...path]]/route.tsx. Slugs are lowercase a-z, 0-9,
