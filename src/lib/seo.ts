@@ -18,7 +18,7 @@ import {
 } from "@/locales";
 import { format, lowerFirst } from "@/locales/format";
 import { OG_SIZE } from "./og-size";
-import { KAFLABS_URL, SITE_NAME, SITE_URL } from "./site";
+import { KAFLABS_URL, SAME_AS_URLS, SITE_NAME, SITE_URL } from "./site";
 
 export const SITE_VIEWPORT: Viewport = {
   themeColor: [
@@ -34,6 +34,7 @@ const PUBLISHER = {
   name: SITE_NAME,
   url: SITE_URL,
   logo: `${SITE_URL}/icons/icon-512.png`,
+  sameAs: SAME_AS_URLS,
   parentOrganization: {
     "@type": "Organization",
     "@id": `${KAFLABS_URL}/#organization`,

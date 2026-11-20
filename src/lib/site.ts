@@ -13,6 +13,15 @@ export const KAFLABS_PRIVACY_URL = "https://kaflabs.com/privacy";
 export const KAFLABS_TERMS_URL = "https://kaflabs.com/terms";
 export const GITHUB_REPOSITORY_URL = "https://github.com/Ahmad-Alkaf/pdf-anvil";
 export const GITHUB_PROFILE_URL = "https://github.com/Ahmad-Alkaf";
+export const MAKER_POST_URL = "https://ahmed.kaflabs.com/posts/PDF-Anvil/";
+
+/**
+ * Pages about PDF Anvil itself on other sites (schema.org `sameAs`). They tell
+ * search engines which product this is, apart from others with a similar name.
+ * Add each directory profile here (AlternativeTo, Product Hunt, ...) once it is live.
+ */
+export const SAME_AS_URLS = [GITHUB_REPOSITORY_URL, MAKER_POST_URL];
+
 export const SUPPORT_EMAIL = "support@kaflabs.com";
 
 export const UMAMI_SRC = process.env.NEXT_PUBLIC_UMAMI_SRC || "";
