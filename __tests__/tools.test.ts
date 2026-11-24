@@ -3,12 +3,20 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { getTool, HEADER_LIMIT, HEADER_TOOLS, isToolSlug, NAV_TOOLS, TOOLS, TOOLS_BY_PRIORITY, VARIANT_TOOLS, type ToolKind } from "@/lib/tools";
 
-/** Keys of TOOL_COMPONENTS in the client registry, read from the source text. */
-function clientRegistryKinds(): string[] {
-  const path = fileURLToPath(new URL("../src/components/tool/tool-registry.client.ts", import.meta.url));
-  const source = readFileSync(path, "utf8");
+function readSource(relativePath: string): string {
+  return readFileSync(fileURLToPath(new URL(relativePath, import.meta.url)), "utf8");
+}
+
+/** Entries of TOOL_COMPONENTS in the client registry, read from the source text: [line, kind]. */
+function clientRegistryEntries(): [string, string][] {
+  const source = readSource("../src/components/tool/tool-registry.client.ts");
   const body = source.slice(source.indexOf("TOOL_COMPONENTS"));
-  return [...body.matchAll(/^\s*"?([\w-]+)"?:\s*dynamic\(/gm)].map((m) => m[1]);
+  return [...body.matchAll(/^\s*"?([\w-]+)"?:\s*dynamic\(.*$/gm)].map((m) => [m[0], m[1]]);
+}
+
+/** Keys of TOOL_COMPONENTS in the client registry. */
+function clientRegistryKinds(): string[] {
+  return clientRegistryEntries().map(([, kind]) => kind);
 }
 
 describe("TOOLS registry", () => {
@@ -39,6 +47,20 @@ describe("TOOLS registry", () => {
     const kindsInClient = clientRegistryKinds();
     expect(kindsInClient.length).toBeGreaterThan(0);
     expect([...kindsInTools].sort()).toEqual([...kindsInClient].sort());
+  });
+
+  it("shows the first dropzone of each tool while its chunk loads, so the page does not shift", () => {
+    // ToolPlaceholder renders <Dropzone accept={tool.accept} multiple={tool.multiple} capture={tool.capture} />.
+    for (const [line, kind] of clientRegistryEntries()) expect(line, kind).toContain("loading: ToolPlaceholder");
+    for (const tool of NAV_TOOLS) {
+      const first = readSource(`../src/components/tool/tools/${tool.kind}-tool.tsx`).match(/<Dropzone\s[\s\S]*?\/>/)?.[0] ?? "";
+      expect(first, tool.kind).toContain("accept={tool.accept}");
+      expect(first, tool.kind).not.toMatch(/\b(compact|label|disabled)\b/);
+      expect(/\bmultiple(?!=\{false\})/.test(first), tool.kind).toBe(tool.multiple);
+      if (!first.includes("capture={tool.capture}")) {
+        expect(TOOLS.filter((t) => t.kind === tool.kind && t.capture).map((t) => t.slug), tool.kind).toEqual([]);
+      }
+    }
   });
 
   it("has exactly one nav entry per kind", () => {
