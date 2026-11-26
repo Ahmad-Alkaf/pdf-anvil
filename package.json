@@ -11,7 +11,7 @@
     "dev": "next dev",
     "prebuild": "node scripts/copy-pdf-assets.mjs",
     "build": "next build",
-    "postbuild": "node scripts/copy-font-preloads.mjs",
+    "postbuild": "node scripts/add-font-preloads.mjs",
     "start": "next start",
     "deploy": "npx wrangler deploy",
     "lint": "eslint",
