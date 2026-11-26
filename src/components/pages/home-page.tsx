@@ -25,8 +25,10 @@ export function HomePage({ locale }: { locale: Locale }) {
         <div className="animate-fade-in mx-auto flex size-16 items-center justify-center rounded-2xl bg-accent text-primary">
           <Mark className="size-10" />
         </div>
-        <h1 className="animate-fade-in-up mt-6 text-4xl font-bold sm:text-5xl lg:text-6xl">{messages.common.tagline}</h1>
-        <p className="animate-fade-in-up mx-auto mt-5 max-w-2xl text-lg text-muted-foreground [animation-delay:80ms]">{m.hero}</p>
+        {/* No fade on the heading and the intro: an element at opacity 0 is not an LCP
+            candidate, so a fade moves the LCP of the page to the end of the animation. */}
+        <h1 className="mt-6 text-4xl font-bold sm:text-5xl lg:text-6xl">{messages.common.tagline}</h1>
+        <p className="mx-auto mt-5 max-w-2xl text-lg text-muted-foreground">{m.hero}</p>
         <ul className="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
           {m.trust.map((text, i) => {
             const Icon = TRUST_ICONS[i];
