@@ -34,11 +34,13 @@ export function Footer({ locale, links }: { locale: Locale; links: readonly Loca
             <p className="mt-4 text-xs text-muted-foreground">{formatJsx(m.byline, { brand })}</p>
             {links.length > 1 && (
               <nav aria-label={messages.header.language} className="mt-4">
-                <ul className="flex flex-wrap gap-x-3 gap-y-1 text-xs">
+                {/* Each link is at least 24 x 24 px (WCAG 2.5.8 target size): the
+                    names are short and the rows wrap close together on phones. */}
+                <ul className="flex flex-wrap gap-x-3 text-xs">
                   {links.map((l) => (
                     <li key={l.code}>
                       {l.code === locale ? (
-                        <span aria-current="true" className="font-semibold">
+                        <span aria-current="true" className="inline-flex min-h-6 items-center font-semibold">
                           {l.name}
                         </span>
                       ) : (
@@ -46,7 +48,7 @@ export function Footer({ locale, links }: { locale: Locale; links: readonly Loca
                           href={l.href}
                           hrefLang={l.htmlLang}
                           lang={l.htmlLang}
-                          className="text-muted-foreground transition-colors hover:text-foreground"
+                          className="inline-flex min-h-6 min-w-6 items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
                         >
                           {l.name}
                         </Link>
